@@ -3,16 +3,17 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "Engine/DataTable.h"
 #include "PlantActor.generated.h"
 
-UENUM()
+UENUM(BlueprintType)
 enum PlantType {
-	FRUIT,
+	TREE,
 	ROOT,
 	VINE
 };
 
-UENUM()
+UENUM(BlueprintType)
 enum PlantStage {
 	SEED,
 	BUDDING,
@@ -39,17 +40,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void OnDayEndHandler();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+		void DayEnded();
+		virtual void DayEnded_Implementation();
+
+	//UStaticMeshComponent* CurrentPlantMesh;
+
+	//TArray<UStaticMeshComponent*> PlantMeshes;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION()
-		void InitPlant(FString name, PlantType type);
-
-	UFUNCTION()
-		void Grow();
 
 	bool bIsWatered;
 	bool bIsFertilized;
@@ -58,11 +59,30 @@ public:
 	int Quality;
 	int DaysAlive;
 
-	void SetType(PlantType newStage);
-	PlantType GetType();
+	void SetType(FString newType);
 
-	void SetStage(PlantStage newStage);
-	PlantStage GetStage();
+	/* Blueprint Accessible Functions */
+
+	UFUNCTION(BlueprintCallable)
+		void SetType(PlantType newType);
+	
+	UFUNCTION(BlueprintCallable)
+		PlantType GetType() const;
+
+	UFUNCTION(BlueprintCallable)
+		void SetStage(PlantStage newStage);
+
+	UFUNCTION(BlueprintCallable)
+		PlantStage GetStage() const;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Plant Data")
+		FString PlantName;
+
+	UFUNCTION(BlueprintCallable)
+		void InitPlant(FString name);
+
+	UFUNCTION()
+		void Grow();
 
 	/* TODO: Change return type to InventoryItem[] when implemented*/
 	UFUNCTION()

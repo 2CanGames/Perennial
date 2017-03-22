@@ -1,25 +1,29 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "Engine/DataTable.h"
+#include "PlantLookupTable.generated.h"
+
 /**
  * 
  */
-USTRUCT(Blueprintable)
+USTRUCT(BlueprintType)
 struct PERENNIAL_API FPlantLookupTable : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Plant")
-		FString Plant_Name;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Plant")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
 		FString Plant_Type;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Plant Assets")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
+		int Quality;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
+		int Days_To_Next_Stage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Assets")
 		FString Plant_Model;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Plant Assets")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Assets")
 		FString Plant_Portrait;
-
-
 };
