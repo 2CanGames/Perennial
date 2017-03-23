@@ -11,12 +11,23 @@ APlantActor::APlantActor()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+	
+	//https://wiki.unrealengine.com/Using_excel_to_store_gameplay_data_-_DataTables
+	//Find the lookup table and have a pointer to it
+	if (!PlantLookupTable) {
+		static ConstructorHelpers::FObjectFinder<UDataTable> PlantLookupDataTable_BP(TEXT("DataTable'/Game/Data/PlantData.PlantData'"));
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> PlantableBlueprint(TEXT("Blueprint'/Game/Blueprints/BP_PlantableArea.BP_PlantableArea'"));
-	if (PlantableBlueprint.Object) {
-		BP_Plantable = (UClass*)PlantableBlueprint.Object->GeneratedClass;
-	}
-	InitPlant("tomato");
+		if (PlantLookupDataTable_BP.Object) {
+			PlantLookupTable = PlantLookupDataTable_BP.Object;
+		}
+	} 
+
+	bIsWatered = false;
+	bIsFertilized = false;
+	bIsHarvestable = false;
+	Quality = 0;
+	DaysAlive = 0;
+	_CurrentStage = EPlantStage::SEED;
 }
 
 // Called when the game starts or when spawned
@@ -42,14 +53,6 @@ void APlantActor::BeginPlay()
 			);
 		}
 	}
-	//Set default parameters
-	bIsWatered = false;
-	bIsFertilized = false;
-	bIsHarvestable = false;
-	Quality = 0;
-	DaysAlive = 0;
-	_CurrentStage = EPlantStage::SEED;
-
 }
 
 void APlantActor::DayEnded()
@@ -94,11 +97,18 @@ void APlantActor::Tick(float DeltaTime)
 
 void APlantActor::InitPlant(FString name)
 {
+	if (_CurrentStage != EPlantStage::NO_PLANT) return;
+
 	PlantName = name.ToLower();
-	//https://wiki.unrealengine.com/Using_excel_to_store_gameplay_data_-_DataTables
-	//Find the lookup table and have a pointer to it
-	static ConstructorHelpers::FObjectFinder<UDataTable> PlantLookupDataTable_BP(TEXT("DataTable'/Game/Data/PlantData.PlantData'"));
-	PlantLookupTable = PlantLookupDataTable_BP.Object;
+	//Set default parameters
+	bIsWatered = false;
+	bIsFertilized = false;
+	bIsHarvestable = false;
+	Quality = 0;
+	DaysAlive = 0;
+	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
+	if(newMesh)
+		((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*newMesh);
 }
 
 /*
@@ -108,6 +118,10 @@ void APlantActor::Grow()
 {
 	//Updates the stage 
 	switch (_CurrentStage) {
+	case EPlantStage::NO_PLANT:
+		//_CurrentStage = EPlantStage::SEED;
+		InitPlant("tomato");
+		return;
 	case EPlantStage::SEED:
 		_CurrentStage = EPlantStage::BUDDING;
 		break;
@@ -118,8 +132,21 @@ void APlantActor::Grow()
 		bIsHarvestable = true;
 		break;
 	};
-
-	((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*(MeshMap.Find(_CurrentStage)));
+	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
+	
+	if (newMesh)
+		((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*newMesh);
+	else {
+		if (GEngine) {
+			GEngine->AddOnScreenDebugMessage(
+				1,
+				2.0f,
+				FColor::Blue,
+				TEXT("Mesh cannot be swapped")
+			);
+		}
+	}
+	//((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*(MeshMap.Find(_CurrentStage)));
 	DaysAlive = 0;
 
 	if (bIsHarvestable) Harvest();
@@ -128,7 +155,7 @@ void APlantActor::Grow()
 
 void APlantActor::Die()
 {
-
+	//Revert to plantable soil
 }
 
 void APlantActor::SetType(EPlantType newType)
@@ -139,6 +166,7 @@ void APlantActor::SetType(EPlantType newType)
 void APlantActor::SetType(FString newType)
 {
 	newType = newType.ToLower();
+
 	if (newType == "tree") _Type = EPlantType::TREE;
 	else if (newType == "vine") _Type = EPlantType::VINE;
 	else if (newType == "root") _Type = EPlantType::ROOT;
@@ -161,8 +189,10 @@ EPlantStage APlantActor::GetStage() const
 }
 
 void APlantActor::Harvest()
-{
+{	
 	//Get some fruit and seeds
+
+
 	//Delete this object
 	if (GEngine) {
 		GEngine->AddOnScreenDebugMessage(
@@ -172,12 +202,6 @@ void APlantActor::Harvest()
 			TEXT("Harvesting")
 		);
 	}
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	UWorld* World = GetWorld();
-	FTransform ThisTransform = GetTransform();
-	if (World) {
-		World->SpawnActor(BP_Plantable, &ThisTransform, SpawnParams);
-		Destroy();
-	}
+	_CurrentStage = EPlantStage::SEED;
+	//((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*(MeshMap.Find(_CurrentStage)));
 }

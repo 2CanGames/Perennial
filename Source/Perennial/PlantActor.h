@@ -6,6 +6,7 @@
 #include "Engine/DataTable.h"
 #include "PlantActor.generated.h"
 
+
 UENUM(BlueprintType)
 enum EPlantType {
 	TREE,
@@ -15,6 +16,7 @@ enum EPlantType {
 
 UENUM(BlueprintType)
 enum EPlantStage {
+	NO_PLANT,
 	SEED,
 	BUDDING,
 	GROWN
