@@ -27,7 +27,7 @@ APlantActor::APlantActor()
 	bIsHarvestable = false;
 	Quality = 0;
 	DaysAlive = 0;
-	_CurrentStage = EPlantStage::SEED;
+	_CurrentStage = EPlantStage::NO_PLANT;
 }
 
 // Called when the game starts or when spawned
@@ -106,9 +106,11 @@ void APlantActor::InitPlant(FString name)
 	bIsHarvestable = false;
 	Quality = 0;
 	DaysAlive = 0;
+	_CurrentStage = EPlantStage::SEED;
 	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
+	
 	if(newMesh)
-		((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*newMesh);
+		((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*newMesh);	
 }
 
 /*
@@ -119,7 +121,6 @@ void APlantActor::Grow()
 	//Updates the stage 
 	switch (_CurrentStage) {
 	case EPlantStage::NO_PLANT:
-		//_CurrentStage = EPlantStage::SEED;
 		InitPlant("tomato");
 		return;
 	case EPlantStage::SEED:
@@ -202,6 +203,6 @@ void APlantActor::Harvest()
 			TEXT("Harvesting")
 		);
 	}
-	_CurrentStage = EPlantStage::SEED;
-	//((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*(MeshMap.Find(_CurrentStage)));
+	_CurrentStage = EPlantStage::NO_PLANT;
+	((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*(MeshMap.Find(_CurrentStage)));
 }
