@@ -6,15 +6,17 @@
 #include "Engine/DataTable.h"
 #include "PlantActor.generated.h"
 
+
 UENUM(BlueprintType)
-enum PlantType {
+enum EPlantType {
 	TREE,
 	ROOT,
 	VINE
 };
 
 UENUM(BlueprintType)
-enum PlantStage {
+enum EPlantStage {
+	NO_PLANT,
 	SEED,
 	BUDDING,
 	GROWN
@@ -24,31 +26,35 @@ UCLASS()
 class PERENNIAL_API APlantActor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	APlantActor();
 
 private:
 	UDataTable* PlantLookupTable;
 
+	UClass* BP_Plantable;
+
 	int _TimeSinceLastWatering;
-	PlantStage _CurrentStage;
-	PlantType _Type;
+	EPlantStage _CurrentStage;
+	EPlantType _Type;
+
+	UFUNCTION()
+		void Grow();
+
+	void Die();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 		void DayEnded();
-		virtual void DayEnded_Implementation();
-
-	//UStaticMeshComponent* CurrentPlantMesh;
 
 	//TArray<UStaticMeshComponent*> PlantMeshes;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -63,17 +69,20 @@ public:
 
 	/* Blueprint Accessible Functions */
 
-	UFUNCTION(BlueprintCallable)
-		void SetType(PlantType newType);
-	
-	UFUNCTION(BlueprintCallable)
-		PlantType GetType() const;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
+		TMap<TEnumAsByte<EPlantStage>, USkeletalMesh*> MeshMap;
 
 	UFUNCTION(BlueprintCallable)
-		void SetStage(PlantStage newStage);
+		void SetType(EPlantType newType);
 
 	UFUNCTION(BlueprintCallable)
-		PlantStage GetStage() const;
+		EPlantType GetType() const;
+
+	UFUNCTION(BlueprintCallable)
+		void SetStage(EPlantStage newStage);
+
+	UFUNCTION(BlueprintCallable)
+		EPlantStage GetStage() const;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Plant Data")
 		FString PlantName;
@@ -81,11 +90,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void InitPlant(FString name);
 
-	UFUNCTION()
-		void Grow();
-
 	/* TODO: Change return type to InventoryItem[] when implemented*/
 	UFUNCTION()
 		void Harvest();
-	
+
 };
