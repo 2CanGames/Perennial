@@ -4,6 +4,7 @@
 #include "TP_ThirdPerson.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TP_ThirdPersonCharacter.h"
+#include "PlantActor.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATP_ThirdPersonCharacter
@@ -55,6 +56,10 @@ void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATP_ThirdPersonCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATP_ThirdPersonCharacter::MoveRight);
+
+	PlayerInputComponent->BindAction("Harvest", IE_Pressed, this, &ATP_ThirdPersonCharacter::Harvest);
+	PlayerInputComponent->BindAction("Water", IE_Pressed, this, &ATP_ThirdPersonCharacter::Water);
+	PlayerInputComponent->BindAction("Fertilize", IE_Pressed, this, &ATP_ThirdPersonCharacter::Fertilize);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -127,4 +132,58 @@ void ATP_ThirdPersonCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ATP_ThirdPersonCharacter::Harvest()
+{
+	if (PlantInRange())
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Harvest"));
+		}
+	}
+	// Check if plant is harvestable
+	// Call plant's harvest method
+}
+
+void ATP_ThirdPersonCharacter::Water()
+{
+	if (PlantInRange())
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Water"));
+		}
+	}
+
+	// Check if plant is waterable
+	// Call plant's water method
+}
+
+void ATP_ThirdPersonCharacter::Fertilize()
+{
+	if (PlantInRange())
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilize"));
+		}
+	}
+	// Check if player has fertilizer
+	// Check if plant is already fertilized
+	// Call plant's fertilize method
+}
+
+bool ATP_ThirdPersonCharacter::PlantInRange()
+{
+	// Crashes unreal for some reason???
+	TArray<AActor*> Plant;
+
+	// Check if there is a plant in range
+	// TO-DO: Make sure overlapping object is plant
+	GetOverlappingActors(Plant);
+	return Plant.Num() > 0 ? true : false;
+	
+	return true;
 }
