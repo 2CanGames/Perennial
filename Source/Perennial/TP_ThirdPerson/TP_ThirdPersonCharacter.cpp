@@ -140,13 +140,23 @@ void ATP_ThirdPersonCharacter::Harvest()
 	if (Plant != nullptr)
 	{
 		// Check if plant is harvestable
-
-		if (GEngine)
+		if (Plant->bIsHarvestable)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Harvest"));
-		}
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Harvest!"));
+			}
 
-		// Call plant's harvest method?
+			// Call plant's harvest method
+			// Plant->Harvest();
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Not harvestable!"));
+			}
+		}
 	}
 }
 
@@ -155,14 +165,25 @@ void ATP_ThirdPersonCharacter::Water()
 	APlantActor* Plant = PlantInRange();
 	if (Plant != nullptr)
 	{
-		if (GEngine)
+		// Check if plant is waterable
+		if (!(Plant->bIsWatered))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Water"));
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Water!"));
+			}
+
+			// Call plant's water method
+			// Plant->Water();
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already watered!"));
+			}
 		}
 	}
-
-	// Check if plant is waterable
-	// Call plant's water method
 }
 
 void ATP_ThirdPersonCharacter::Fertilize()
@@ -170,14 +191,29 @@ void ATP_ThirdPersonCharacter::Fertilize()
 	APlantActor* Plant = PlantInRange();
 	if (Plant != nullptr)
 	{
-		if (GEngine)
+		// Check if player has fertilizer
+
+		// Check if plant is already fertilized
+		if (!(Plant->bIsFertilized))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilize"));
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilize!"));
+			}
+
+			// Call plant's fertilize method
+			// Plant->Fertilize();
+
+			// Deduct 1 fertilizer from player inventory
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already fertilized!"));
+			}
 		}
 	}
-	// Check if player has fertilizer
-	// Check if plant is already fertilized
-	// Call plant's fertilize method
 }
 
 APlantActor* ATP_ThirdPersonCharacter::PlantInRange()
@@ -186,7 +222,6 @@ APlantActor* ATP_ThirdPersonCharacter::PlantInRange()
 
 	// Check if there is a plant in range
 	GetOverlappingActors(Plant, APlantActor::StaticClass());
-
 	APlantActor* p = (APlantActor*) Plant.GetData();
 
 	return p;
