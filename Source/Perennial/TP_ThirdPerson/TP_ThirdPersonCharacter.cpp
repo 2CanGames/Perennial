@@ -136,20 +136,24 @@ void ATP_ThirdPersonCharacter::MoveRight(float Value)
 
 void ATP_ThirdPersonCharacter::Harvest()
 {
-	if (PlantInRange())
+	APlantActor* Plant = PlantInRange();
+	if (Plant != nullptr)
 	{
+		// Check if plant is harvestable
+
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Harvest"));
 		}
+
+		// Call plant's harvest method?
 	}
-	// Check if plant is harvestable
-	// Call plant's harvest method
 }
 
 void ATP_ThirdPersonCharacter::Water()
 {
-	if (PlantInRange())
+	APlantActor* Plant = PlantInRange();
+	if (Plant != nullptr)
 	{
 		if (GEngine)
 		{
@@ -163,7 +167,8 @@ void ATP_ThirdPersonCharacter::Water()
 
 void ATP_ThirdPersonCharacter::Fertilize()
 {
-	if (PlantInRange())
+	APlantActor* Plant = PlantInRange();
+	if (Plant != nullptr)
 	{
 		if (GEngine)
 		{
@@ -175,15 +180,14 @@ void ATP_ThirdPersonCharacter::Fertilize()
 	// Call plant's fertilize method
 }
 
-bool ATP_ThirdPersonCharacter::PlantInRange()
+APlantActor* ATP_ThirdPersonCharacter::PlantInRange()
 {
-	// Crashes unreal for some reason???
 	TArray<AActor*> Plant;
 
 	// Check if there is a plant in range
-	// TO-DO: Make sure overlapping object is plant
-	GetOverlappingActors(Plant);
-	return Plant.Num() > 0 ? true : false;
-	
-	return true;
+	GetOverlappingActors(Plant, APlantActor::StaticClass());
+
+	APlantActor* p = (APlantActor*) Plant.GetData();
+
+	return p;
 }

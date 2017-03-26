@@ -1,6 +1,7 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
+#include "PlantActor.h"
 #include "TP_ThirdPersonCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -59,7 +60,7 @@ protected:
 	void Water();
 	void Fertilize();
 
-	bool PlantInRange();
+	APlantActor* PlantInRange();
 
 protected:
 	// APawn interface
