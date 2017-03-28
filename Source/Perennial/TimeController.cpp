@@ -20,7 +20,7 @@ ATimeController* ATimeController::getInstance() {
 void ATimeController::advanceToNextDay() {
 	currentAmountOfDays++;
 
-	if (currentAmountOfDays % DAYS_PER_SEASON == 0) {
+	/*if (currentAmountOfDays % DAYS_PER_SEASON == 0) {
 
 		int numberOfSeasonsPassed = currentAmountOfDays / DAYS_PER_SEASON;
 		int seasonNumber = numberOfSeasonsPassed % NUM_OF_SEASONS;
@@ -41,7 +41,7 @@ void ATimeController::advanceToNextDay() {
 		}
 	}
 
-	broadcast();
+	broadcast();*/
 }
 
 void ATimeController::broadcast() {
@@ -51,7 +51,6 @@ void ATimeController::broadcast() {
 	{
 		(*itr)->processEvent();
 	}
-
 }
 
 void ATimeController::eventListenerSignUp(EventListener *listener) {
