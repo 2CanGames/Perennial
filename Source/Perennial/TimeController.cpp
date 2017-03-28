@@ -57,4 +57,8 @@ void ATimeController::eventListenerSignUp(EventListener *listener) {
 	listeners.push_back(listener);
 }
 
+int ATimeController::getCurrentAmountOfDays() {
+	return currentAmountOfDays;
+}
+
 

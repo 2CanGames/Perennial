@@ -18,4 +18,5 @@ public:
 	~InventoryItem();
 
 	int getQuality();
+	FString getPlantName();
 };

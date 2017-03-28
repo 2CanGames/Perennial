@@ -42,3 +42,7 @@ int InventoryItem::getQuality() {
 
 	return 0;
 }
+
+FString InventoryItem::getPlantName() {
+	return plantName;
+}

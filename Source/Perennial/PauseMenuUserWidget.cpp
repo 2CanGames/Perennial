@@ -7,13 +7,13 @@
 
 void UPauseMenuUserWidget::advanceTimeController() {
 	
-	//ATimeController::getInstance()->advanceToNextDay();
+	ATimeController::getInstance()->advanceToNextDay();
 	if (GEngine) {
 		GEngine->AddOnScreenDebugMessage(
 			GEngine->ScreenMessages.Num() + 1,
 			6.0f,
 			FColor::Green,
-			"Working"
+			"Current Day: " + FString::FromInt(ATimeController::getInstance()->getCurrentAmountOfDays())
 		);
 	}
 }
