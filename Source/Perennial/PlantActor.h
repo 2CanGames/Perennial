@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
+#include "InventoryItem.h"
 #include "PlantActor.generated.h"
 
 
@@ -89,6 +90,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void InitPlant(FString name);
+
+		void Plant(InventoryItem * item);
+
+	UFUNCTION()
+		void Water();
+
+	UFUNCTION()
+		void Fertilize();
 
 	/* TODO: Change return type to InventoryItem[] when implemented*/
 	UFUNCTION()

@@ -113,6 +113,21 @@ void APlantActor::InitPlant(FString name)
 		((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*newMesh);	
 }
 
+void APlantActor::Plant(InventoryItem * item)
+{
+	
+}
+
+void APlantActor::Water()
+{
+	bIsWatered = true;
+}
+
+void APlantActor::Fertilize()
+{
+	bIsFertilized = true;
+}
+
 /*
 Grows the plant to the next stage
 */
