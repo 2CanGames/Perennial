@@ -4,6 +4,7 @@
 #include "TP_ThirdPerson.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TP_ThirdPersonCharacter.h"
+#include "PlantActor.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATP_ThirdPersonCharacter
@@ -55,6 +56,10 @@ void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATP_ThirdPersonCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATP_ThirdPersonCharacter::MoveRight);
+
+	PlayerInputComponent->BindAction("Harvest", IE_Pressed, this, &ATP_ThirdPersonCharacter::Harvest);
+	PlayerInputComponent->BindAction("Water", IE_Pressed, this, &ATP_ThirdPersonCharacter::Water);
+	PlayerInputComponent->BindAction("Fertilize", IE_Pressed, this, &ATP_ThirdPersonCharacter::Fertilize);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -127,4 +132,97 @@ void ATP_ThirdPersonCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ATP_ThirdPersonCharacter::Harvest()
+{
+	APlantActor* Plant = PlantInRange();
+	if (Plant != nullptr)
+	{
+		// Check if plant is harvestable
+		if (Plant->bIsHarvestable)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Harvest!"));
+			}
+
+			// Call plant's harvest method
+			// Plant->Harvest();
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Not harvestable!"));
+			}
+		}
+	}
+}
+
+void ATP_ThirdPersonCharacter::Water()
+{
+	APlantActor* Plant = PlantInRange();
+	if (Plant != nullptr)
+	{
+		// Check if plant is waterable
+		if (!(Plant->bIsWatered))
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Water!"));
+			}
+
+			// Call plant's water method
+			// Plant->Water();
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already watered!"));
+			}
+		}
+	}
+}
+
+void ATP_ThirdPersonCharacter::Fertilize()
+{
+	APlantActor* Plant = PlantInRange();
+	if (Plant != nullptr)
+	{
+		// Check if player has fertilizer
+
+		// Check if plant is already fertilized
+		if (!(Plant->bIsFertilized))
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilize!"));
+			}
+
+			// Call plant's fertilize method
+			// Plant->Fertilize();
+
+			// Deduct 1 fertilizer from player inventory
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already fertilized!"));
+			}
+		}
+	}
+}
+
+APlantActor* ATP_ThirdPersonCharacter::PlantInRange()
+{
+	TArray<AActor*> Plant;
+
+	// Check if there is a plant in range
+	GetOverlappingActors(Plant, APlantActor::StaticClass());
+	APlantActor* p = (APlantActor*) Plant.GetData();
+
+	return p;
 }
