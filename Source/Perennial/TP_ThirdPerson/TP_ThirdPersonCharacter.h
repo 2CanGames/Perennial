@@ -59,6 +59,7 @@ protected:
 	void Harvest();
 	void Water();
 	void Fertilize();
+	void Plant();
 
 	APlantActor* PlantInRange();
 

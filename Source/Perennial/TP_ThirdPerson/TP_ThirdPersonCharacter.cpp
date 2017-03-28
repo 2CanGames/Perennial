@@ -60,6 +60,7 @@ void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Harvest", IE_Pressed, this, &ATP_ThirdPersonCharacter::Harvest);
 	PlayerInputComponent->BindAction("Water", IE_Pressed, this, &ATP_ThirdPersonCharacter::Water);
 	PlayerInputComponent->BindAction("Fertilize", IE_Pressed, this, &ATP_ThirdPersonCharacter::Fertilize);
+	PlayerInputComponent->BindAction("Plant", IE_Pressed, this, &ATP_ThirdPersonCharacter::Plant);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -140,7 +141,7 @@ void ATP_ThirdPersonCharacter::Harvest()
 	if (Plant != nullptr)
 	{
 		// Check if plant is harvestable
-		if (Plant->bIsHarvestable)
+		if (Plant->GetStage() == EPlantStage::GROWN)
 		{
 			if (GEngine)
 			{
@@ -148,7 +149,7 @@ void ATP_ThirdPersonCharacter::Harvest()
 			}
 
 			// Call plant's harvest method
-			// Plant->Harvest();
+			Plant->Harvest();
 		}
 		else
 		{
@@ -204,13 +205,43 @@ void ATP_ThirdPersonCharacter::Fertilize()
 			// Call plant's fertilize method
 			// Plant->Fertilize();
 
-			// Deduct 1 fertilizer from player inventory
+			// Deduct 1 fertilizer from player inventory?
 		}
 		else
 		{
 			if (GEngine)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already fertilized!"));
+			}
+		}
+	}
+}
+
+void ATP_ThirdPersonCharacter::Plant()
+{
+	APlantActor* Plant = PlantInRange();
+	if (Plant != nullptr)
+	{
+		// Check if player has seeds
+
+		// Check if the dirt mound already has a plant
+		if (Plant->GetStage() == EPlantStage::NO_PLANT)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Plant!"));
+			}
+
+			// Call plant's plant seed method
+			//Plant->Plant(Inventory item seed);
+
+			// Deduct seeds from player inventory?
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already a plant there!"));
 			}
 		}
 	}
