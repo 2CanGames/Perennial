@@ -7,7 +7,7 @@
 
 void UPauseMenuUserWidget::advanceTimeController() {
 	
-	//ATimeController::getInstance()->advanceToNextDay();
+	ATimeController::getInstance()->advanceToNextDay();
 	if (GEngine) {
 		GEngine->AddOnScreenDebugMessage(
 			GEngine->ScreenMessages.Num() + 1,

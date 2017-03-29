@@ -42,6 +42,7 @@ void ATimeController::advanceToNextDay() {
 	}
 
 	broadcast();*/
+	broadcast();
 }
 
 void ATimeController::broadcast() {

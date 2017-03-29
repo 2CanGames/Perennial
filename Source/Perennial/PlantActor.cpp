@@ -2,6 +2,8 @@
 
 #include "Perennial.h"
 #include "PlantLookupTable.h"
+#include "PlantEventListener.h"
+#include <memory>
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "PlantActor.h"
 
@@ -27,6 +29,7 @@ APlantActor::APlantActor()
 	bIsHarvestable = false;
 	Quality = 0;
 	DaysAlive = 0;
+	_TimeSinceLastWatering = 0;
 	_CurrentStage = EPlantStage::NO_PLANT;
 }
 
@@ -34,6 +37,7 @@ APlantActor::APlantActor()
 void APlantActor::BeginPlay()
 {
 	Super::BeginPlay();
+	OnDayEndedListener = new PlantEventListener(this);
 	static const FString ContextString(TEXT("GENERAL"));
 
 	FPlantLookupTable* PLookupRow = PlantLookupTable->FindRow<FPlantLookupTable>(
@@ -60,19 +64,19 @@ void APlantActor::DayEnded()
 	//Make checks on bool flags
 
 	//If I haven't been watered today, update TimeSinceLastWatering
-	//if (bIsWatered) _TimeSinceLastWatering = 0;
-	//else _TimeSinceLastWatering++;
+	if (bIsWatered) _TimeSinceLastWatering = 0;
+	else _TimeSinceLastWatering++;
 
-	////If I'm fertilized, then speed up days I have been alive
-	////TODO: have this number be an exposed variable (FertilizerEffectiveness)
-	//if (bIsFertilized) DaysAlive += 2;
-	//else DaysAlive++;
+	//If I'm fertilized, then speed up days I have been alive
+	//TODO: have this number be an exposed variable (FertilizerEffectiveness)
+	if (bIsFertilized) DaysAlive += 2;
+	else DaysAlive++;
 
-	////If TimeSinceLastWater > a number, then Die
-	//if (_TimeSinceLastWatering > 2) {
-	//	Die();
-	//	return;
-	//}
+	//If TimeSinceLastWater > a number, then Die
+	if (_TimeSinceLastWatering > 2) {
+		Die();
+		return;
+	}
 
 	//Revert isWatered state
 	//Revert isFertilized state
@@ -104,81 +108,93 @@ void APlantActor::InitPlant(FString name)
 	bIsWatered = false;
 	bIsFertilized = false;
 	bIsHarvestable = false;
-	Quality = 0;
 	DaysAlive = 0;
-	_CurrentStage = EPlantStage::SEED;
-	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
-	
-	if(newMesh)
-		((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*newMesh);	
+	SetStage(EPlantStage::SEED);
 }
 
+/*
+	Plants the plant.
+	Sets this PlantActor to the appropriate type of plant
+*/
 void APlantActor::Plant(InventoryItem * item)
 {
-	
+	//Do not do anything if my state is anything but NO_PLANT
+	if (_CurrentStage != EPlantStage::NO_PLANT) return;
+
+	//Init plant based on type of item
+	Quality = item->getQuality();
+	//TODO: Eventually get name from item
+	InitPlant("tomato");
 }
 
+/*
+	Waters the plant. Right now sets a bool to true
+	TODO: call some UI or material function here
+*/
 void APlantActor::Water()
 {
 	bIsWatered = true;
 }
 
+/*
+	Fertilizes the plant. Right now just sets a bool to true
+	TODO: call some UI function here
+*/
 void APlantActor::Fertilize()
 {
 	bIsFertilized = true;
 }
 
 /*
-Grows the plant to the next stage
+	Grows the plant to the next stage, resets DaysAlive, and changes the mesh
 */
 void APlantActor::Grow()
 {
 	//Updates the stage 
 	switch (_CurrentStage) {
 	case EPlantStage::NO_PLANT:
+		//TODO: remove this once we have planting working
 		InitPlant("tomato");
 		return;
 	case EPlantStage::SEED:
-		_CurrentStage = EPlantStage::BUDDING;
+		SetStage(EPlantStage::BUDDING);
 		break;
 	case EPlantStage::BUDDING:
-		_CurrentStage = EPlantStage::GROWN;
+		SetStage(EPlantStage::GROWN);
 		break;
 	case EPlantStage::GROWN:
 		bIsHarvestable = true;
 		break;
 	};
-	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
-	
-	if (newMesh)
-		((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*newMesh);
-	else {
-		if (GEngine) {
-			GEngine->AddOnScreenDebugMessage(
-				1,
-				2.0f,
-				FColor::Blue,
-				TEXT("Mesh cannot be swapped")
-			);
-		}
-	}
-	//((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*(MeshMap.Find(_CurrentStage)));
-	DaysAlive = 0;
 
-	if (bIsHarvestable) Harvest();
-	//Reset DaysAlive
+	DaysAlive = 0;
 }
 
+/*
+	Plant values are reset to default and we revert back to NO_PLANT state
+*/
 void APlantActor::Die()
 {
+	//Reset
+	bIsWatered = false;
+	bIsFertilized = false;
+	bIsHarvestable = false;
+	Quality = 0;
+	DaysAlive = 0;
 	//Revert to plantable soil
+	SetStage(EPlantStage::NO_PLANT);
 }
 
+/*
+	Sets the type of plant
+*/
 void APlantActor::SetType(EPlantType newType)
 {
 	_Type = newType;
 }
-
+/*
+	Sets the type of plant given a type in string format
+*/
 void APlantActor::SetType(FString newType)
 {
 	newType = newType.ToLower();
@@ -188,15 +204,28 @@ void APlantActor::SetType(FString newType)
 	else if (newType == "root") _Type = EPlantType::ROOT;
 }
 
-
+/*
+	Returns type of plant
+*/
 EPlantType APlantActor::GetType() const
 {
 	return _Type;
 }
 
+/*
+	Changes the stage at which the plant is at and swaps for the appropriate
+	mesh
+*/
 void APlantActor::SetStage(EPlantStage newStage)
 {
 	_CurrentStage = newStage;
+	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
+	if (newMesh) {
+		USkeletalMeshComponent* Root = (USkeletalMeshComponent*) GetRootComponent();
+		Root->SetSkeletalMesh(*newMesh, false);
+		if(&(*newMesh)->Materials[1] && (*newMesh)->Materials[1].MaterialInterface) 
+			Root->SetMaterial(0, (*newMesh)->Materials[1].MaterialInterface);
+	}
 }
 
 EPlantStage APlantActor::GetStage() const
@@ -218,6 +247,7 @@ void APlantActor::Harvest()
 			TEXT("Harvesting")
 		);
 	}
-	_CurrentStage = EPlantStage::NO_PLANT;
-	((USkeletalMeshComponent*)GetRootComponent())->SetSkeletalMesh(*(MeshMap.Find(_CurrentStage)));
+	SetStage(EPlantStage::NO_PLANT);
+
+	//return TArray<InventoryItem>();
 }
