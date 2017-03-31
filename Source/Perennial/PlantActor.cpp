@@ -30,6 +30,14 @@ APlantActor::APlantActor()
 	DaysAlive = 0;
 	_TimeSinceLastWatering = 0;
 	_CurrentStage = EPlantStage::NO_PLANT;
+
+	TArray<UActorComponent*> Icons = GetComponentsByClass(UBillboardComponent::StaticClass());
+	for (int i = 0; i < Icons.Num(); i++) {
+		UBillboardComponent* icon = (UBillboardComponent*)Icons[i];
+		if (icon->GetName().Contains("Water")) WaterIcon = icon;
+		/*else if (icon->GetName().Contains("Harvest")) WaterIcon = icon;
+		else if (icon->GetName().Contains("Fertilized")) WaterIcon = icon;*/
+	}
 }
 
 // Called when the game starts or when spawned
@@ -56,20 +64,23 @@ void APlantActor::BeginPlay()
 			);
 		}
 	}
-	TArray<UActorComponent*> Icons = GetComponentsByClass(UBillboardComponent::StaticClass());
-	for (int i = 0; i < Icons.Num(); i++) {
-		UBillboardComponent* icon = (UBillboardComponent*)Icons[i];
-		if (icon->GetName().Contains("Water")) WaterIcon = icon;
-		/*else if (icon->GetName().Contains("Harvest")) WaterIcon = icon;
-		else if (icon->GetName().Contains("Fertilized")) WaterIcon = icon;*/
+	if (!WaterIcon) {
+		TArray<UActorComponent*> Icons = GetComponentsByClass(UBillboardComponent::StaticClass());
+		for (int i = 0; i < Icons.Num(); i++) {
+			UBillboardComponent* icon = (UBillboardComponent*)Icons[i];
+			if (icon->GetName().Contains("Water")) WaterIcon = icon;
+			/*else if (icon->GetName().Contains("Harvest")) WaterIcon = icon;
+			else if (icon->GetName().Contains("Fertilized")) WaterIcon = icon;*/
+		}
 	}
 	SetIsWatered(false);
 }
 
 void APlantActor::DayEnded()
 {
+	//if (_CurrentStage == EPlantStage::NO_PLANT) return;
 	//Make checks on bool flags
-
+	
 	//If I haven't been watered today, update TimeSinceLastWatering
 	if (bIsWatered) _TimeSinceLastWatering = 0;
 	else _TimeSinceLastWatering++;
@@ -85,18 +96,18 @@ void APlantActor::DayEnded()
 		return;
 	}
 
-	//Revert isWatered state
-	//Revert isFertilized state
-
-	SetIsWatered(false);
-	bIsFertilized = false;
-
 	//Determine if we need to grow based on how many days we have been alive
 	//if yes, call grow
 	//TODO: Change 3 to DaysToGrow variable
 	if (DaysAlive >= 0) {
 		Grow();
 	}
+
+	//Revert isWatered state
+	//Revert isFertilized state
+
+	SetIsWatered(false);
+	bIsFertilized = false;
 }
 
 // Called every frame
@@ -112,11 +123,11 @@ void APlantActor::InitPlant(FString name)
 
 	PlantName = name.ToLower();
 	//Set default parameters
+	SetStage(EPlantStage::SEED);
 	SetIsWatered(false);
 	bIsFertilized = false;
 	bIsHarvestable = false;
 	DaysAlive = 0;
-	SetStage(EPlantStage::SEED);
 }
 
 /*
@@ -182,14 +193,14 @@ void APlantActor::Grow()
 */
 void APlantActor::Die()
 {
+	//Revert to plantable soil
+	SetStage(EPlantStage::NO_PLANT);
 	//Reset
 	SetIsWatered(false);
 	bIsFertilized = false;
 	bIsHarvestable = false;
 	Quality = 0;
 	DaysAlive = 0;
-	//Revert to plantable soil
-	SetStage(EPlantStage::NO_PLANT);
 }
 
 /*
@@ -214,7 +225,7 @@ void APlantActor::SetType(FString newType)
 void APlantActor::SetIsWatered(bool newBool)
 {
 	bIsWatered = newBool;
-	if (WaterIcon == NULL || WaterIcon == nullptr) return;
+	if (!WaterIcon) return;
 	//If this plant is watered or is not planted, then don't show the icon
 	if (bIsWatered || (_CurrentStage == EPlantStage::NO_PLANT)) {
 		WaterIcon->SetVisibility(false);

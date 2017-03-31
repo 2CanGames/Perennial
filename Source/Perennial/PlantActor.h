@@ -36,6 +36,7 @@ public:
 private:
 
 	UBillboardComponent* WaterIcon;
+	
 
 	//Listener for when TimeController broadcasts the day ending
 	PlantEventListener* OnDayEndedListener;
