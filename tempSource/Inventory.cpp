@@ -3,22 +3,22 @@
 #include "Perennial.h"
 #include "Inventory.h"
 
-UInventory::UInventory()
+Inventory::Inventory()
 {
 }
 
-UInventory::~UInventory()
+Inventory::~Inventory()
 {
 	items.clear();
 }
 
-void UInventory::addItemToInventory(UInventoryItem *item) {
+void Inventory::addItemToInventory(InventoryItem *item) {
 	items.push_back(item);
 }
 
-void UInventory::removeItemToInventory(UInventoryItem *item) {
-
-	std::vector<UInventoryItem*>::iterator itr;
+void Inventory::removeItemToInventory(InventoryItem *item) {
+	
+	std::vector<InventoryItem*>::iterator itr;
 	for (itr = items.begin(); itr < items.end(); ++itr)
 	{
 		if ((*itr) == item) {
@@ -27,11 +27,11 @@ void UInventory::removeItemToInventory(UInventoryItem *item) {
 	}
 }
 
-int UInventory::getTotalQualityPoints() {
-
+int Inventory::getTotalQualityPoints() {
+	
 	int totalQualityPoints = 0;
 
-	std::vector<UInventoryItem*>::iterator itr;
+	std::vector<InventoryItem*>::iterator itr;
 	for (itr = items.begin(); itr < items.end(); ++itr)
 	{
 		totalQualityPoints += (*itr)->getQuality();
@@ -39,5 +39,3 @@ int UInventory::getTotalQualityPoints() {
 
 	return totalQualityPoints;
 }
-
-

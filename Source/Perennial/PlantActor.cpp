@@ -116,7 +116,7 @@ void APlantActor::InitPlant(FString name)
 	Plants the plant.
 	Sets this PlantActor to the appropriate type of plant
 */
-void APlantActor::Plant(InventoryItem * item)
+void APlantActor::Plant(UInventoryItem * item)
 {
 	//Do not do anything if my state is anything but NO_PLANT
 	if (_CurrentStage != EPlantStage::NO_PLANT) return;

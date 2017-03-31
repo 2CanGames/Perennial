@@ -7,21 +7,29 @@
 
 #include "InventoryItem.h"
 
+#include "UObject/NoExportTypes.h"
+#include "Inventory.generated.h"
+
 /**
  * 
  */
-class PERENNIAL_API Inventory
+UCLASS()
+class PERENNIAL_API UInventory : public UObject
 {
+	GENERATED_BODY()
 private:
-	std::vector<InventoryItem*> items;
+	std::vector<UInventoryItem*> items;
 
 public:
-	Inventory();
-	~Inventory();
+	UInventory();
+	~UInventory();
 
-	void addItemToInventory(InventoryItem *item);
-	
-	void removeItemToInventory(InventoryItem *item);
+	void addItemToInventory(UInventoryItem *item);
+
+	void removeItemToInventory(UInventoryItem *item);
 
 	int getTotalQualityPoints();
+	
+	
+	
 };

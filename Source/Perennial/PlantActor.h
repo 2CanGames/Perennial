@@ -91,7 +91,7 @@ public:
 		void DayEnded();
 
 	UFUNCTION()
-		void Plant(InventoryItem * item);
+		void Plant(UInventoryItem * item);
 
 	UFUNCTION()
 		void Water();

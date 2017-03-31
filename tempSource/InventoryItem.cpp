@@ -3,11 +3,7 @@
 #include "Perennial.h"
 #include "InventoryItem.h"
 
-UInventoryItem::UInventoryItem() {
-	plantName = "DEFAULT_PLANT_NAME";
-}
-
-UInventoryItem::UInventoryItem(FString plantName)
+InventoryItem::InventoryItem(FString plantName)
 {
 	if (!PlantLookupTable) {
 		static ConstructorHelpers::FObjectFinder<UDataTable> PlantLookupDataTable_BP(TEXT("DataTable'/Game/Data/PlantData.PlantData'"));
@@ -19,11 +15,11 @@ UInventoryItem::UInventoryItem(FString plantName)
 	this->plantName = plantName;
 }
 
-UInventoryItem::~UInventoryItem()
+InventoryItem::~InventoryItem()
 {
 }
 
-int UInventoryItem::getQuality() {
+int InventoryItem::getQuality() {
 	static const FString ContextString(TEXT("GENERAL"));
 
 	FPlantLookupTable* PLookupRow = PlantLookupTable->FindRow<FPlantLookupTable>(
@@ -35,21 +31,18 @@ int UInventoryItem::getQuality() {
 		//SetType(PLookupRow->Plant_Type);
 		return PLookupRow->Quality;
 		/*if (GEngine) {
-		GEngine->AddOnScreenDebugMessage(
-		GEngine->ScreenMessages.Num() + 1,
-		6.0f,
-		FColor::Green,
-		*PLookupRow->Plant_Type
-		);
+			GEngine->AddOnScreenDebugMessage(
+				GEngine->ScreenMessages.Num() + 1,
+				6.0f,
+				FColor::Green,
+				*PLookupRow->Plant_Type
+			);
 		}*/
 	}
 
 	return 0;
 }
 
-FString UInventoryItem::getPlantName() {
+FString InventoryItem::getPlantName() {
 	return plantName;
 }
-
-
-
