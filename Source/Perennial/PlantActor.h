@@ -34,23 +34,34 @@ public:
 	APlantActor();
 
 private:
+
+	UBillboardComponent* WaterIcon;
+
+	//Listener for when TimeController broadcasts the day ending
 	PlantEventListener* OnDayEndedListener;
 
+	//Data lookup table for plant information
 	UDataTable* PlantLookupTable;
 
-	UClass* BP_Plantable;
-
+	//Days since this plant was last watered
 	int _TimeSinceLastWatering;
+	//The current plant stage this plant is on
 	EPlantStage _CurrentStage;
+	//The type of plant this plant is currently
 	EPlantType _Type;
 
+	//Initialize the plant given a name
 	void InitPlant(FString name);
 
+	//Grow the plant to the next stage
 	void Grow();
 
+	//Resets the plant back into a plantable area
 	void Die();
 
 protected:
+	
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -66,6 +77,12 @@ public:
 	int DaysAlive;
 
 	void SetType(FString newType);
+
+	void SetIsWatered(bool newBool);
+
+	void SetIsHarvestable(bool newBool);
+
+	void SetIsFertilized(bool newBool);
 
 	/* Blueprint Accessible Functions */
 

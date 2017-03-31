@@ -24,7 +24,6 @@ APlantActor::APlantActor()
 		}
 	} 
 
-	bIsWatered = false;
 	bIsFertilized = false;
 	bIsHarvestable = false;
 	Quality = 0;
@@ -57,6 +56,14 @@ void APlantActor::BeginPlay()
 			);
 		}
 	}
+	TArray<UActorComponent*> Icons = GetComponentsByClass(UBillboardComponent::StaticClass());
+	for (int i = 0; i < Icons.Num(); i++) {
+		UBillboardComponent* icon = (UBillboardComponent*)Icons[i];
+		if (icon->GetName().Contains("Water")) WaterIcon = icon;
+		/*else if (icon->GetName().Contains("Harvest")) WaterIcon = icon;
+		else if (icon->GetName().Contains("Fertilized")) WaterIcon = icon;*/
+	}
+	SetIsWatered(false);
 }
 
 void APlantActor::DayEnded()
@@ -81,7 +88,7 @@ void APlantActor::DayEnded()
 	//Revert isWatered state
 	//Revert isFertilized state
 
-	bIsWatered = false;
+	SetIsWatered(false);
 	bIsFertilized = false;
 
 	//Determine if we need to grow based on how many days we have been alive
@@ -105,7 +112,7 @@ void APlantActor::InitPlant(FString name)
 
 	PlantName = name.ToLower();
 	//Set default parameters
-	bIsWatered = false;
+	SetIsWatered(false);
 	bIsFertilized = false;
 	bIsHarvestable = false;
 	DaysAlive = 0;
@@ -133,7 +140,7 @@ void APlantActor::Plant(UInventoryItem * item)
 */
 void APlantActor::Water()
 {
-	bIsWatered = true;
+	SetIsWatered(true);
 }
 
 /*
@@ -176,7 +183,7 @@ void APlantActor::Grow()
 void APlantActor::Die()
 {
 	//Reset
-	bIsWatered = false;
+	SetIsWatered(false);
 	bIsFertilized = false;
 	bIsHarvestable = false;
 	Quality = 0;
@@ -202,6 +209,27 @@ void APlantActor::SetType(FString newType)
 	if (newType == "tree") _Type = EPlantType::TREE;
 	else if (newType == "vine") _Type = EPlantType::VINE;
 	else if (newType == "root") _Type = EPlantType::ROOT;
+}
+
+void APlantActor::SetIsWatered(bool newBool)
+{
+	bIsWatered = newBool;
+	if (WaterIcon == NULL || WaterIcon == nullptr) return;
+	//If this plant is watered or is not planted, then don't show the icon
+	if (bIsWatered || (_CurrentStage == EPlantStage::NO_PLANT)) {
+		WaterIcon->SetVisibility(false);
+	}
+	else {
+		WaterIcon->SetVisibility(true);
+	}
+}
+
+void APlantActor::SetIsHarvestable(bool newBool)
+{
+}
+
+void APlantActor::SetIsFertilized(bool newBool)
+{
 }
 
 /*
