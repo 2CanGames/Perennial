@@ -4,8 +4,8 @@
 
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
+#include "InventoryItem.h"
 #include "PlantActor.generated.h"
-
 
 UENUM(BlueprintType)
 enum EPlantType {
@@ -22,6 +22,8 @@ enum EPlantStage {
 	GROWN
 };
 
+class PlantEventListener;
+
 UCLASS()
 class PERENNIAL_API APlantActor : public AActor
 {
@@ -32,6 +34,8 @@ public:
 	APlantActor();
 
 private:
+	PlantEventListener* OnDayEndedListener;
+
 	UDataTable* PlantLookupTable;
 
 	UClass* BP_Plantable;
@@ -40,19 +44,15 @@ private:
 	EPlantStage _CurrentStage;
 	EPlantType _Type;
 
-	UFUNCTION()
-		void Grow();
+	void InitPlant(FString name);
+
+	void Grow();
 
 	void Die();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UFUNCTION(BlueprintCallable)
-		void DayEnded();
-
-	//TArray<UStaticMeshComponent*> PlantMeshes;
 
 public:
 	// Called every frame
@@ -88,10 +88,18 @@ public:
 		FString PlantName;
 
 	UFUNCTION(BlueprintCallable)
-		void InitPlant(FString name);
+		void DayEnded();
+
+	UFUNCTION()
+		void Plant(UInventoryItem * item);
+
+	UFUNCTION()
+		void Water();
+
+	UFUNCTION()
+		void Fertilize();
 
 	/* TODO: Change return type to InventoryItem[] when implemented*/
 	UFUNCTION()
 		void Harvest();
-
 };

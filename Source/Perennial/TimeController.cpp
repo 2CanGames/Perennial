@@ -42,6 +42,7 @@ void ATimeController::advanceToNextDay() {
 	}
 
 	broadcast();*/
+	broadcast();
 }
 
 void ATimeController::broadcast() {
@@ -55,6 +56,10 @@ void ATimeController::broadcast() {
 
 void ATimeController::eventListenerSignUp(EventListener *listener) {
 	listeners.push_back(listener);
+}
+
+int ATimeController::getCurrentAmountOfDays() {
+	return currentAmountOfDays;
 }
 
 

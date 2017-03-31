@@ -4,28 +4,19 @@
 
 #include "PlantLookupTable.h"
 
-#include "UObject/NoExportTypes.h"
-#include "InventoryItem.generated.h"
-
 /**
  * 
  */
-UCLASS()
-class PERENNIAL_API UInventoryItem : public UObject
+class PERENNIAL_API InventoryItem
 {
-	GENERATED_BODY()
-	
 private:
 	UDataTable* PlantLookupTable;
 	FString plantName;
 
 public:
-	UInventoryItem();
-	UInventoryItem(FString plantName);
-	~UInventoryItem();
+	InventoryItem(FString plantName);
+	~InventoryItem();
 
 	int getQuality();
 	FString getPlantName();
-	
-	
 };
