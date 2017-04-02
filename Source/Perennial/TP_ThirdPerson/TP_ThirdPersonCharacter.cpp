@@ -203,7 +203,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 			}
 
 			// Call plant's fertilize method
-			// Plant->Fertilize();
+			Plant->Fertilize();
 
 			// Deduct 1 fertilizer from player inventory?
 		}
