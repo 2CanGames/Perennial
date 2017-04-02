@@ -88,7 +88,8 @@ void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp
 
 void ATP_ThirdPersonCharacter::OnEndOverlap(class UPrimitiveComponent* HitComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	CurrentPlant = nullptr;
+	if((APlantActor*)Other == CurrentPlant)
+		CurrentPlant = nullptr;
 }
 
 void ATP_ThirdPersonCharacter::OnResetVR()
@@ -202,13 +203,12 @@ void ATP_ThirdPersonCharacter::Water()
 
 void ATP_ThirdPersonCharacter::Fertilize()
 {
-	APlantActor* Plant = PlantInRange();
-	if (Plant != nullptr)
+	if (CurrentPlant)
 	{
 		// Check if player has fertilizer
 
 		// Check if plant is already fertilized
-		if (!(Plant->bIsFertilized))
+		if (!(CurrentPlant->bIsFertilized))
 		{
 			if (GEngine)
 			{
@@ -216,7 +216,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 			}
 
 			// Call plant's fertilize method
-			// Plant->Fertilize();
+			CurrentPlant->Fertilize();
 
 			// Deduct 1 fertilizer from player inventory
 		}

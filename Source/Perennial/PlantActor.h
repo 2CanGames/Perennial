@@ -35,9 +35,6 @@ public:
 
 private:
 
-	UBillboardComponent* WaterIcon;
-	
-
 	//Listener for when TimeController broadcasts the day ending
 	PlantEventListener* OnDayEndedListener;
 
@@ -46,8 +43,10 @@ private:
 
 	//Days since this plant was last watered
 	int _TimeSinceLastWatering;
+
 	//The current plant stage this plant is on
 	EPlantStage _CurrentStage;
+
 	//The type of plant this plant is currently
 	EPlantType _Type;
 
@@ -62,6 +61,20 @@ private:
 
 protected:
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant")
+		class USkeletalMeshComponent* PlantMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
+		int DaysToGrow = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
+		int FertilizerSpeed = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Status")
+		class UBillboardComponent* WaterIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Status")
+		class UParticleSystemComponent* FertilizerEffect;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

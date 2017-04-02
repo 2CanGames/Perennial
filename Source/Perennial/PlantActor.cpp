@@ -24,20 +24,19 @@ APlantActor::APlantActor()
 		}
 	} 
 
-	bIsFertilized = false;
+	PlantMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PlantMesh"));
+	WaterIcon = CreateDefaultSubobject<UBillboardComponent>(TEXT("WaterIcon"));
+	FertilizerEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FertilizerEffect"));
+
+	RootComponent = PlantMesh;
+
 	bIsHarvestable = false;
 	Quality = 0;
 	DaysAlive = 0;
 	_TimeSinceLastWatering = 0;
 	_CurrentStage = EPlantStage::NO_PLANT;
 
-	TArray<UActorComponent*> Icons = GetComponentsByClass(UBillboardComponent::StaticClass());
-	for (int i = 0; i < Icons.Num(); i++) {
-		UBillboardComponent* icon = (UBillboardComponent*)Icons[i];
-		if (icon->GetName().Contains("Water")) WaterIcon = icon;
-		/*else if (icon->GetName().Contains("Harvest")) WaterIcon = icon;
-		else if (icon->GetName().Contains("Fertilized")) WaterIcon = icon;*/
-	}
+	
 }
 
 // Called when the game starts or when spawned
@@ -64,16 +63,9 @@ void APlantActor::BeginPlay()
 			);
 		}
 	}
-	if (!WaterIcon) {
-		TArray<UActorComponent*> Icons = GetComponentsByClass(UBillboardComponent::StaticClass());
-		for (int i = 0; i < Icons.Num(); i++) {
-			UBillboardComponent* icon = (UBillboardComponent*)Icons[i];
-			if (icon->GetName().Contains("Water")) WaterIcon = icon;
-			/*else if (icon->GetName().Contains("Harvest")) WaterIcon = icon;
-			else if (icon->GetName().Contains("Fertilized")) WaterIcon = icon;*/
-		}
-	}
+
 	SetIsWatered(false);
+	SetIsFertilized(false);
 }
 
 void APlantActor::DayEnded()
@@ -86,8 +78,7 @@ void APlantActor::DayEnded()
 	else _TimeSinceLastWatering++;
 
 	//If I'm fertilized, then speed up days I have been alive
-	//TODO: have this number be an exposed variable (FertilizerEffectiveness)
-	if (bIsFertilized) DaysAlive += 2;
+	if (bIsFertilized) DaysAlive += FertilizerSpeed;
 	else DaysAlive++;
 
 	//If TimeSinceLastWater > a number, then Die
@@ -98,8 +89,7 @@ void APlantActor::DayEnded()
 
 	//Determine if we need to grow based on how many days we have been alive
 	//if yes, call grow
-	//TODO: Change 3 to DaysToGrow variable
-	if (DaysAlive >= 0) {
+	if (DaysAlive >= DaysToGrow) {
 		Grow();
 	}
 
@@ -107,7 +97,7 @@ void APlantActor::DayEnded()
 	//Revert isFertilized state
 
 	SetIsWatered(false);
-	bIsFertilized = false;
+	SetIsFertilized(false);
 }
 
 // Called every frame
@@ -125,7 +115,7 @@ void APlantActor::InitPlant(FString name)
 	//Set default parameters
 	SetStage(EPlantStage::SEED);
 	SetIsWatered(false);
-	bIsFertilized = false;
+	SetIsFertilized(false);
 	bIsHarvestable = false;
 	DaysAlive = 0;
 }
@@ -160,7 +150,7 @@ void APlantActor::Water()
 */
 void APlantActor::Fertilize()
 {
-	bIsFertilized = true;
+	SetIsFertilized(true);
 }
 
 /*
@@ -197,7 +187,7 @@ void APlantActor::Die()
 	SetStage(EPlantStage::NO_PLANT);
 	//Reset
 	SetIsWatered(false);
-	bIsFertilized = false;
+	SetIsFertilized(false);
 	bIsHarvestable = false;
 	Quality = 0;
 	DaysAlive = 0;
@@ -241,6 +231,14 @@ void APlantActor::SetIsHarvestable(bool newBool)
 
 void APlantActor::SetIsFertilized(bool newBool)
 {
+	bIsFertilized = newBool;
+	if (!FertilizerEffect) return;
+	if (bIsFertilized && !(_CurrentStage == EPlantStage::NO_PLANT)) {
+		FertilizerEffect->ActivateSystem();
+	}
+	else {
+		FertilizerEffect->DeactivateSystem();
+	}
 }
 
 /*
@@ -260,10 +258,9 @@ void APlantActor::SetStage(EPlantStage newStage)
 	_CurrentStage = newStage;
 	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
 	if (newMesh) {
-		USkeletalMeshComponent* Root = (USkeletalMeshComponent*) GetRootComponent();
-		Root->SetSkeletalMesh(*newMesh, false);
+		PlantMesh->SetSkeletalMesh(*newMesh, false);
 		if(&(*newMesh)->Materials[1] && (*newMesh)->Materials[1].MaterialInterface) 
-			Root->SetMaterial(0, (*newMesh)->Materials[1].MaterialInterface);
+			PlantMesh->SetMaterial(0, (*newMesh)->Materials[1].MaterialInterface);
 	}
 }
 
