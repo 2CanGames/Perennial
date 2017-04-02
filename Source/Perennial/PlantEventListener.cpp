@@ -4,10 +4,6 @@
 #include "PlantActor.h"
 #include "PlantEventListener.h"
 
-PlantEventListener::~PlantEventListener()
-{
-}
-
 void PlantEventListener::processEvent()
 {
 	MyActor->DayEnded();

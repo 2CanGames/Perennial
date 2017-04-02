@@ -16,6 +16,5 @@ public:
 	PlantEventListener(APlantActor * actor) : EventListener() {
 		MyActor = actor; 
 	}
-	~PlantEventListener();
 	void processEvent();
 };

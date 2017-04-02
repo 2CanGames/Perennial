@@ -68,6 +68,11 @@ void APlantActor::BeginPlay()
 	SetIsFertilized(false);
 }
 
+void APlantActor::EndPlay(EEndPlayReason::Type Reason)
+{
+	delete OnDayEndedListener;
+}
+
 void APlantActor::DayEnded()
 {
 	//if (_CurrentStage == EPlantStage::NO_PLANT) return;
@@ -259,7 +264,7 @@ void APlantActor::SetStage(EPlantStage newStage)
 	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
 	if (newMesh) {
 		PlantMesh->SetSkeletalMesh(*newMesh, false);
-		if(&(*newMesh)->Materials[1] && (*newMesh)->Materials[1].MaterialInterface) 
+		if((*newMesh)->Materials.Num() > 1 && &(*newMesh)->Materials[1] && (*newMesh)->Materials[1].MaterialInterface) 
 			PlantMesh->SetMaterial(0, (*newMesh)->Materials[1].MaterialInterface);
 	}
 }
