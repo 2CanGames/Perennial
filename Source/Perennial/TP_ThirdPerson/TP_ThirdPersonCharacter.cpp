@@ -221,7 +221,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 		if (!(CurrentPlant->bIsFertilized))
 		{
 			// Check that player has fertilizer
-			if (MyActor->DeleteFertilizer())
+			if (!MyActor->DeleteFertilizer())
 			{
 				if (GEngine)
 				{

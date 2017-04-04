@@ -43,6 +43,11 @@ void ACharacterActor::DayEnded()
 {
 	DaysAlive++;
 	NumFertilizers = 3;
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilizers: ") + FString::FromInt(NumFertilizers));
+	}
 }
 
 bool ACharacterActor::DeleteFertilizer()
@@ -54,6 +59,12 @@ bool ACharacterActor::DeleteFertilizer()
 	else
 	{
 		NumFertilizers--;
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilizers: ") + FString::FromInt(NumFertilizers));
+		}
+
 		return true;
 	}
 }
