@@ -12,7 +12,9 @@
 				"Engine",
 				"UMGEditor",
 				"UMG",
-				"CoreUObject"
+				"CoreUObject",
+				"Slate",
+				"SlateCore"
 			]
 		}
 	]

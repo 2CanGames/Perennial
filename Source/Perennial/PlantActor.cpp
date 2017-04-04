@@ -24,13 +24,19 @@ APlantActor::APlantActor()
 		}
 	} 
 
-	bIsWatered = false;
-	bIsFertilized = false;
+	PlantMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PlantMesh"));
+	WaterIcon = CreateDefaultSubobject<UBillboardComponent>(TEXT("WaterIcon"));
+	FertilizerEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FertilizerEffect"));
+
+	RootComponent = PlantMesh;
+
 	bIsHarvestable = false;
 	Quality = 0;
 	DaysAlive = 0;
 	_TimeSinceLastWatering = 0;
 	_CurrentStage = EPlantStage::NO_PLANT;
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -57,19 +63,27 @@ void APlantActor::BeginPlay()
 			);
 		}
 	}
+
+	SetIsWatered(false);
+	SetIsFertilized(false);
+}
+
+void APlantActor::EndPlay(EEndPlayReason::Type Reason)
+{
+	delete OnDayEndedListener;
 }
 
 void APlantActor::DayEnded()
 {
+	//if (_CurrentStage == EPlantStage::NO_PLANT) return;
 	//Make checks on bool flags
-
+	
 	//If I haven't been watered today, update TimeSinceLastWatering
 	if (bIsWatered) _TimeSinceLastWatering = 0;
 	else _TimeSinceLastWatering++;
 
 	//If I'm fertilized, then speed up days I have been alive
-	//TODO: have this number be an exposed variable (FertilizerEffectiveness)
-	if (bIsFertilized) DaysAlive += 2;
+	if (bIsFertilized) DaysAlive += FertilizerSpeed;
 	else DaysAlive++;
 
 	//If TimeSinceLastWater > a number, then Die
@@ -78,18 +92,17 @@ void APlantActor::DayEnded()
 		return;
 	}
 
+	//Determine if we need to grow based on how many days we have been alive
+	//if yes, call grow
+	if (DaysAlive >= DaysToGrow) {
+		Grow();
+	}
+
 	//Revert isWatered state
 	//Revert isFertilized state
 
-	bIsWatered = false;
-	bIsFertilized = false;
-
-	//Determine if we need to grow based on how many days we have been alive
-	//if yes, call grow
-	//TODO: Change 3 to DaysToGrow variable
-	if (DaysAlive >= 0) {
-		Grow();
-	}
+	SetIsWatered(false);
+	SetIsFertilized(false);
 }
 
 // Called every frame
@@ -105,11 +118,11 @@ void APlantActor::InitPlant(FString name)
 
 	PlantName = name.ToLower();
 	//Set default parameters
-	bIsWatered = false;
-	bIsFertilized = false;
+	SetStage(EPlantStage::SEED);
+	SetIsWatered(false);
+	SetIsFertilized(false);
 	bIsHarvestable = false;
 	DaysAlive = 0;
-	SetStage(EPlantStage::SEED);
 }
 
 /*
@@ -133,7 +146,7 @@ void APlantActor::Plant(UInventoryItem * item)
 */
 void APlantActor::Water()
 {
-	bIsWatered = true;
+	SetIsWatered(true);
 }
 
 /*
@@ -142,7 +155,7 @@ void APlantActor::Water()
 */
 void APlantActor::Fertilize()
 {
-	bIsFertilized = true;
+	SetIsFertilized(true);
 }
 
 /*
@@ -175,14 +188,14 @@ void APlantActor::Grow()
 */
 void APlantActor::Die()
 {
+	//Revert to plantable soil
+	SetStage(EPlantStage::NO_PLANT);
 	//Reset
-	bIsWatered = false;
-	bIsFertilized = false;
+	SetIsWatered(false);
+	SetIsFertilized(false);
 	bIsHarvestable = false;
 	Quality = 0;
 	DaysAlive = 0;
-	//Revert to plantable soil
-	SetStage(EPlantStage::NO_PLANT);
 }
 
 /*
@@ -204,6 +217,35 @@ void APlantActor::SetType(FString newType)
 	else if (newType == "root") _Type = EPlantType::ROOT;
 }
 
+void APlantActor::SetIsWatered(bool newBool)
+{
+	bIsWatered = newBool;
+	if (!WaterIcon) return;
+	//If this plant is watered or is not planted, then don't show the icon
+	if (bIsWatered || (_CurrentStage == EPlantStage::NO_PLANT)) {
+		WaterIcon->SetVisibility(false);
+	}
+	else {
+		WaterIcon->SetVisibility(true);
+	}
+}
+
+void APlantActor::SetIsHarvestable(bool newBool)
+{
+}
+
+void APlantActor::SetIsFertilized(bool newBool)
+{
+	bIsFertilized = newBool;
+	if (!FertilizerEffect) return;
+	if (bIsFertilized && !(_CurrentStage == EPlantStage::NO_PLANT)) {
+		FertilizerEffect->ActivateSystem();
+	}
+	else {
+		FertilizerEffect->DeactivateSystem();
+	}
+}
+
 /*
 	Returns type of plant
 */
@@ -221,10 +263,9 @@ void APlantActor::SetStage(EPlantStage newStage)
 	_CurrentStage = newStage;
 	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
 	if (newMesh) {
-		USkeletalMeshComponent* Root = (USkeletalMeshComponent*) GetRootComponent();
-		Root->SetSkeletalMesh(*newMesh, false);
-		if(&(*newMesh)->Materials[1] && (*newMesh)->Materials[1].MaterialInterface) 
-			Root->SetMaterial(0, (*newMesh)->Materials[1].MaterialInterface);
+		PlantMesh->SetSkeletalMesh(*newMesh, false);
+		if((*newMesh)->Materials.Num() > 1 && &(*newMesh)->Materials[1] && (*newMesh)->Materials[1].MaterialInterface) 
+			PlantMesh->SetMaterial(0, (*newMesh)->Materials[1].MaterialInterface);
 	}
 }
 
