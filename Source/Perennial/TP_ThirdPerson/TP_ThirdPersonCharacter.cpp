@@ -48,6 +48,19 @@ ATP_ThirdPersonCharacter::ATP_ThirdPersonCharacter()
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ATP_ThirdPersonCharacter::OnEndOverlap);
 }
 
+void ATP_ThirdPersonCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	// Find CharacterActor
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterActor::StaticClass(), FoundActors);
+	if (FoundActors.Num() != 0)
+	{
+		MyActor = (ACharacterActor*)FoundActors[0];
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -152,11 +165,10 @@ void ATP_ThirdPersonCharacter::MoveRight(float Value)
 
 void ATP_ThirdPersonCharacter::Harvest()
 {
-	APlantActor* Plant = PlantInRange();
-	if (Plant != nullptr)
+	if (CurrentPlant)
 	{
 		// Check if plant is harvestable
-		if (Plant->GetStage() == EPlantStage::GROWN)
+		if (CurrentPlant->GetStage() == EPlantStage::GROWN)
 		{
 			if (GEngine)
 			{
@@ -164,7 +176,7 @@ void ATP_ThirdPersonCharacter::Harvest()
 			}
 
 			// Call plant's harvest method
-			Plant->Harvest();
+			CurrentPlant->Harvest();
 		}
 		else
 		{
@@ -178,8 +190,6 @@ void ATP_ThirdPersonCharacter::Harvest()
 
 void ATP_ThirdPersonCharacter::Water()
 {
-	//APlantActor* Plant = PlantInRange();
-
 	if (CurrentPlant)
 	{
 		// Check if plant is waterable
@@ -207,13 +217,11 @@ void ATP_ThirdPersonCharacter::Fertilize()
 {
 	if (CurrentPlant)
 	{
-		// Check if player has fertilizer
-
 		// Check if plant is already fertilized
 		if (!(CurrentPlant->bIsFertilized))
 		{
 			// Check that player has fertilizer
-			if (!ACharacterActor::GetInstance()->DeleteFertilizer())
+			if (MyActor->DeleteFertilizer())
 			{
 				if (GEngine)
 				{
@@ -228,7 +236,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 				}
 
 				// Call plant's fertilize method
-				Plant->Fertilize();
+				CurrentPlant->Fertilize();
 			}
 		}
 		else
@@ -243,13 +251,12 @@ void ATP_ThirdPersonCharacter::Fertilize()
 
 void ATP_ThirdPersonCharacter::Plant()
 {
-	APlantActor* Plant = PlantInRange();
-	if (Plant != nullptr)
+	if (CurrentPlant)
 	{
 		// Check if player has seeds
 
 		// Check if the dirt mound already has a plant
-		if (Plant->GetStage() == EPlantStage::NO_PLANT)
+		if (CurrentPlant->GetStage() == EPlantStage::NO_PLANT)
 		{
 			if (GEngine)
 			{
@@ -269,19 +276,4 @@ void ATP_ThirdPersonCharacter::Plant()
 			}
 		}
 	}
-}
-
-APlantActor* ATP_ThirdPersonCharacter::PlantInRange()
-{
-	TArray<AActor*> Plant;
-
-	// Check if there is a plant in range
-	GetOverlappingActors(Plant, APlantActor::StaticClass());
-	APlantActor* p = (APlantActor*) (Plant.GetData());
-	if (p == NULL) return nullptr;
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::FromInt(Plant.Num()));
-	}
-	return p;
 }

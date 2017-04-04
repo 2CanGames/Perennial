@@ -19,7 +19,7 @@ void ACharacterActor::BeginPlay()
 
 	if (!PlayerInventory)
 	{
-		PlayerInventory = new UInventory();
+		PlayerInventory = NewObject<UInventory>(UInventory::StaticClass());
 	}
 
 	_CurrentStage = YOUNG;
@@ -37,12 +37,6 @@ void ACharacterActor::EndPlay(EEndPlayReason::Type Reason)
 void ACharacterActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-ACharacterActor* & ACharacterActor::GetInstance()
-{
-	static ACharacterActor* instance;
-	return instance;
 }
 
 void ACharacterActor::DayEnded()
