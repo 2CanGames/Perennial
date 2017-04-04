@@ -2,6 +2,7 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "PlantActor.h"
+#include "CharacterActor.h"
 #include "TP_ThirdPersonCharacter.generated.h"
 
 UCLASS(config=Game)

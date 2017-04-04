@@ -5,6 +5,7 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TP_ThirdPersonCharacter.h"
 #include "PlantActor.h"
+#include "CharacterActor.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATP_ThirdPersonCharacter
@@ -205,7 +206,8 @@ void ATP_ThirdPersonCharacter::Fertilize()
 			// Call plant's fertilize method
 			Plant->Fertilize();
 
-			// Deduct 1 fertilizer from player inventory?
+			// Deduct 1 fertilizer from player inventory
+			// MyActor->DeleteFertilizer();
 		}
 		else
 		{

@@ -4,6 +4,7 @@
 
 #include "Inventory.h"
 #include "GameFramework/Actor.h"
+#include "CharacterEventListener.h"
 #include "CharacterActor.generated.h"
 
 UENUM(BlueprintType)
@@ -20,12 +21,15 @@ class PERENNIAL_API ACharacterActor : public AActor
 	GENERATED_BODY()
 	
 private:	
-	// Sets default values for this actor's properties
-	ACharacterActor();
-
 	UInventory* PlayerInventory;
 
 	ECharacterStage _CurrentStage;
+
+	CharacterEventListener* OnDayEndedListener;
+
+	int NumFertilizers;
+
+	int DaysAlive;
 	
 	// Should have the functions below to be a true singleton, but they cause compilation errors??
 	// ACharacterActor(ACharacterActor const&);
@@ -35,14 +39,19 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(EEndPlayReason::Type Reason) override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	static ACharacterActor &GetInstance();
+	// Sets default values for this actor's properties
+	ACharacterActor();
 
-	int DaysAlive;
+	//static ACharacterActor &GetInstance();
 
-	
+	void DayEnded();
+
+	bool DeleteFertilizer();
 	
 };

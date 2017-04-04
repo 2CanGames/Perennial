@@ -23,20 +23,43 @@ void ACharacterActor::BeginPlay()
 	}
 
 	_CurrentStage = YOUNG;
-
 	DaysAlive = 0;
-	
+	NumFertilizers = 3;
+	OnDayEndedListener = new CharacterEventListener(this);
+}
+
+void ACharacterActor::EndPlay(EEndPlayReason::Type Reason)
+{
+	delete OnDayEndedListener;
 }
 
 // Called every frame
 void ACharacterActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-ACharacterActor & ACharacterActor::GetInstance()
+/*ACharacterActor & ACharacterActor::GetInstance()
 {
 	static ACharacterActor instance;
 	return instance;
+}*/
+
+void ACharacterActor::DayEnded()
+{
+	DaysAlive++;
+	NumFertilizers = 3;
+}
+
+bool ACharacterActor::DeleteFertilizer()
+{
+	if (NumFertilizers <= 0)
+	{
+		return false;
+	}
+	else
+	{
+		NumFertilizers--;
+		return true;
+	}
 }
