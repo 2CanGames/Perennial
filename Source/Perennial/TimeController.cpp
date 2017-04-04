@@ -58,6 +58,12 @@ void ATimeController::eventListenerSignUp(EventListener *listener) {
 	listeners.push_back(listener);
 }
 
+void ATimeController::eventListenerRemove(EventListener *listener) {
+	auto itr = std::find(listeners.begin(), listeners.end(), listener);
+	if(itr != listeners.end())
+		listeners.erase(itr);
+}
+
 int ATimeController::getCurrentAmountOfDays() {
 	return currentAmountOfDays;
 }

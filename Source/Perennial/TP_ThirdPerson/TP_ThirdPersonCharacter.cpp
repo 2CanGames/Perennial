@@ -42,6 +42,9 @@ ATP_ThirdPersonCharacter::ATP_ThirdPersonCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ATP_ThirdPersonCharacter::OnBeginOverlap);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ATP_ThirdPersonCharacter::OnEndOverlap);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -77,6 +80,17 @@ void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ATP_ThirdPersonCharacter::OnResetVR);
 }
 
+
+void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	CurrentPlant = (APlantActor*)Other;
+}
+
+void ATP_ThirdPersonCharacter::OnEndOverlap(class UPrimitiveComponent* HitComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if((APlantActor*)Other == CurrentPlant)
+		CurrentPlant = nullptr;
+}
 
 void ATP_ThirdPersonCharacter::OnResetVR()
 {
@@ -162,11 +176,12 @@ void ATP_ThirdPersonCharacter::Harvest()
 
 void ATP_ThirdPersonCharacter::Water()
 {
-	APlantActor* Plant = PlantInRange();
-	if (Plant != nullptr)
+	//APlantActor* Plant = PlantInRange();
+
+	if (CurrentPlant)
 	{
 		// Check if plant is waterable
-		if (!(Plant->bIsWatered))
+		if (!(CurrentPlant->bIsWatered))
 		{
 			if (GEngine)
 			{
@@ -174,7 +189,7 @@ void ATP_ThirdPersonCharacter::Water()
 			}
 
 			// Call plant's water method
-			// Plant->Water();
+			CurrentPlant->Water();
 		}
 		else
 		{
@@ -188,13 +203,12 @@ void ATP_ThirdPersonCharacter::Water()
 
 void ATP_ThirdPersonCharacter::Fertilize()
 {
-	APlantActor* Plant = PlantInRange();
-	if (Plant != nullptr)
+	if (CurrentPlant)
 	{
 		// Check if player has fertilizer
 
 		// Check if plant is already fertilized
-		if (!(Plant->bIsFertilized))
+		if (!(CurrentPlant->bIsFertilized))
 		{
 			if (GEngine)
 			{
@@ -202,7 +216,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 			}
 
 			// Call plant's fertilize method
-			// Plant->Fertilize();
+			CurrentPlant->Fertilize();
 
 			// Deduct 1 fertilizer from player inventory
 		}
@@ -222,7 +236,11 @@ APlantActor* ATP_ThirdPersonCharacter::PlantInRange()
 
 	// Check if there is a plant in range
 	GetOverlappingActors(Plant, APlantActor::StaticClass());
-	APlantActor* p = (APlantActor*) Plant.GetData();
-
+	APlantActor* p = (APlantActor*) (Plant.GetData());
+	if (p == NULL) return nullptr;
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::FromInt(Plant.Num()));
+	}
 	return p;
 }

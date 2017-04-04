@@ -11,6 +11,7 @@ class PERENNIAL_API EventListener
 public:
 
 	EventListener();
+	~EventListener();
 
 	// process event with derived class behavior
 	virtual void processEvent() = 0;
