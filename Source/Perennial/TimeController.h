@@ -48,5 +48,7 @@ public:
 	// signs up a EventListener to the TimeController to receive broadcasts
 	void eventListenerSignUp(EventListener *listener);
 
+	void eventListenerRemove(EventListener *listener);
+
 	int getCurrentAmountOfDays();
 };

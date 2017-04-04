@@ -7,3 +7,7 @@
 EventListener::EventListener() {
 	ATimeController::getInstance()->eventListenerSignUp(this);
 }
+
+EventListener::~EventListener() {
+	ATimeController::getInstance()->eventListenerRemove(this);
+}
