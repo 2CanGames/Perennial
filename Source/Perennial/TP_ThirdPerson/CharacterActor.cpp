@@ -39,11 +39,11 @@ void ACharacterActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-/*ACharacterActor & ACharacterActor::GetInstance()
+ACharacterActor* & ACharacterActor::GetInstance()
 {
-	static ACharacterActor instance;
+	static ACharacterActor* instance;
 	return instance;
-}*/
+}
 
 void ACharacterActor::DayEnded()
 {

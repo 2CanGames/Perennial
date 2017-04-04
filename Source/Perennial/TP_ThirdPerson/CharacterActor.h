@@ -21,15 +21,8 @@ class PERENNIAL_API ACharacterActor : public AActor
 	GENERATED_BODY()
 	
 private:	
-	UInventory* PlayerInventory;
-
-	ECharacterStage _CurrentStage;
-
-	CharacterEventListener* OnDayEndedListener;
-
-	int NumFertilizers;
-
-	int DaysAlive;
+	// Sets default values for this actor's properties
+	ACharacterActor();
 	
 	// Should have the functions below to be a true singleton, but they cause compilation errors??
 	// ACharacterActor(ACharacterActor const&);
@@ -45,13 +38,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Sets default values for this actor's properties
-	ACharacterActor();
-
-	//static ACharacterActor &GetInstance();
+	static ACharacterActor* &GetInstance();
 
 	void DayEnded();
 
 	bool DeleteFertilizer();
+
+	UInventory* PlayerInventory;
+
+	ECharacterStage _CurrentStage;
+
+	CharacterEventListener* OnDayEndedListener;
+
+	int NumFertilizers;
+
+	int DaysAlive;
 	
 };

@@ -198,16 +198,24 @@ void ATP_ThirdPersonCharacter::Fertilize()
 		// Check if plant is already fertilized
 		if (!(Plant->bIsFertilized))
 		{
-			if (GEngine)
+			// Check that player has fertilizer
+			if (!ACharacterActor::GetInstance()->DeleteFertilizer())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilize!"));
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Not enough fertilizer"));
+				}
 			}
+			else 
+			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilize!"));
+				}
 
-			// Call plant's fertilize method
-			Plant->Fertilize();
-
-			// Deduct 1 fertilizer from player inventory
-			// MyActor->DeleteFertilizer();
+				// Call plant's fertilize method
+				Plant->Fertilize();
+			}
 		}
 		else
 		{
