@@ -2,6 +2,7 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "PlantActor.h"
+#include "CharacterActor.h"
 #include "TP_ThirdPersonCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -65,15 +66,18 @@ protected:
 	void Harvest();
 	void Water();
 	void Fertilize();
-
-	APlantActor* PlantInRange();
+	void Plant();
 
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	virtual void BeginPlay() override;
+
 	APlantActor* CurrentPlant;
+
+	ACharacterActor* MyActor;
 
 public:
 	/** Returns CameraBoom subobject **/

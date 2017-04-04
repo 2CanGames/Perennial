@@ -5,6 +5,7 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TP_ThirdPersonCharacter.h"
 #include "PlantActor.h"
+#include "CharacterActor.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATP_ThirdPersonCharacter
@@ -47,6 +48,19 @@ ATP_ThirdPersonCharacter::ATP_ThirdPersonCharacter()
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ATP_ThirdPersonCharacter::OnEndOverlap);
 }
 
+void ATP_ThirdPersonCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	// Find CharacterActor
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterActor::StaticClass(), FoundActors);
+	if (FoundActors.Num() != 0)
+	{
+		MyActor = (ACharacterActor*)FoundActors[0];
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -63,6 +77,7 @@ void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Harvest", IE_Pressed, this, &ATP_ThirdPersonCharacter::Harvest);
 	PlayerInputComponent->BindAction("Water", IE_Pressed, this, &ATP_ThirdPersonCharacter::Water);
 	PlayerInputComponent->BindAction("Fertilize", IE_Pressed, this, &ATP_ThirdPersonCharacter::Fertilize);
+	PlayerInputComponent->BindAction("Plant", IE_Pressed, this, &ATP_ThirdPersonCharacter::Plant);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -150,11 +165,10 @@ void ATP_ThirdPersonCharacter::MoveRight(float Value)
 
 void ATP_ThirdPersonCharacter::Harvest()
 {
-	APlantActor* Plant = PlantInRange();
-	if (Plant != nullptr)
+	if (CurrentPlant)
 	{
 		// Check if plant is harvestable
-		if (Plant->bIsHarvestable)
+		if (CurrentPlant->GetStage() == EPlantStage::GROWN)
 		{
 			if (GEngine)
 			{
@@ -162,7 +176,7 @@ void ATP_ThirdPersonCharacter::Harvest()
 			}
 
 			// Call plant's harvest method
-			// Plant->Harvest();
+			CurrentPlant->Harvest();
 		}
 		else
 		{
@@ -176,8 +190,6 @@ void ATP_ThirdPersonCharacter::Harvest()
 
 void ATP_ThirdPersonCharacter::Water()
 {
-	//APlantActor* Plant = PlantInRange();
-
 	if (CurrentPlant)
 	{
 		// Check if plant is waterable
@@ -205,20 +217,27 @@ void ATP_ThirdPersonCharacter::Fertilize()
 {
 	if (CurrentPlant)
 	{
-		// Check if player has fertilizer
-
 		// Check if plant is already fertilized
 		if (!(CurrentPlant->bIsFertilized))
 		{
-			if (GEngine)
+			// Check that player has fertilizer
+			if (!MyActor->DeleteFertilizer())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilize!"));
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Not enough fertilizer"));
+				}
 			}
+			else 
+			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilize!"));
+				}
 
-			// Call plant's fertilize method
-			CurrentPlant->Fertilize();
-
-			// Deduct 1 fertilizer from player inventory
+				// Call plant's fertilize method
+				CurrentPlant->Fertilize();
+			}
 		}
 		else
 		{
@@ -230,17 +249,31 @@ void ATP_ThirdPersonCharacter::Fertilize()
 	}
 }
 
-APlantActor* ATP_ThirdPersonCharacter::PlantInRange()
+void ATP_ThirdPersonCharacter::Plant()
 {
-	TArray<AActor*> Plant;
-
-	// Check if there is a plant in range
-	GetOverlappingActors(Plant, APlantActor::StaticClass());
-	APlantActor* p = (APlantActor*) (Plant.GetData());
-	if (p == NULL) return nullptr;
-	if (GEngine)
+	if (CurrentPlant)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::FromInt(Plant.Num()));
+		// Check if player has seeds
+
+		// Check if the dirt mound already has a plant
+		if (CurrentPlant->GetStage() == EPlantStage::NO_PLANT)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Plant!"));
+			}
+
+			// Call plant's plant seed method
+			//Plant->Plant(Inventory item seed);
+
+			// Deduct seeds from player inventory?
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already a plant there!"));
+			}
+		}
 	}
-	return p;
 }
