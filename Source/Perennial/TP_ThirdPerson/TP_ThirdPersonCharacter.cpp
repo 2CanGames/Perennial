@@ -152,11 +152,10 @@ void ATP_ThirdPersonCharacter::MoveRight(float Value)
 
 void ATP_ThirdPersonCharacter::Harvest()
 {
-	APlantActor* Plant = PlantInRange();
-	if (Plant != nullptr)
+	if (CurrentPlant)
 	{
 		// Check if plant is harvestable
-		if (Plant->GetStage() == EPlantStage::GROWN)
+		if (CurrentPlant->GetStage() == EPlantStage::GROWN)
 		{
 			if (GEngine)
 			{
@@ -164,7 +163,7 @@ void ATP_ThirdPersonCharacter::Harvest()
 			}
 
 			// Call plant's harvest method
-			Plant->Harvest();
+			CurrentPlant->Harvest();
 		}
 		else
 		{
@@ -228,7 +227,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 				}
 
 				// Call plant's fertilize method
-				Plant->Fertilize();
+				CurrentPlant->Fertilize();
 			}
 		}
 		else
@@ -243,13 +242,12 @@ void ATP_ThirdPersonCharacter::Fertilize()
 
 void ATP_ThirdPersonCharacter::Plant()
 {
-	APlantActor* Plant = PlantInRange();
-	if (Plant != nullptr)
+	if (CurrentPlant)
 	{
 		// Check if player has seeds
 
 		// Check if the dirt mound already has a plant
-		if (Plant->GetStage() == EPlantStage::NO_PLANT)
+		if (CurrentPlant->GetStage() == EPlantStage::NO_PLANT)
 		{
 			if (GEngine)
 			{
@@ -269,19 +267,4 @@ void ATP_ThirdPersonCharacter::Plant()
 			}
 		}
 	}
-}
-
-APlantActor* ATP_ThirdPersonCharacter::PlantInRange()
-{
-	TArray<AActor*> Plant;
-
-	// Check if there is a plant in range
-	GetOverlappingActors(Plant, APlantActor::StaticClass());
-	APlantActor* p = (APlantActor*) (Plant.GetData());
-	if (p == NULL) return nullptr;
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::FromInt(Plant.Num()));
-	}
-	return p;
 }

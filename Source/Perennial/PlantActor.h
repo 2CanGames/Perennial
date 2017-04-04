@@ -65,7 +65,7 @@ protected:
 		class USkeletalMeshComponent* PlantMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
-		int DaysToGrow = 0;
+		int DaysToGrow = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
 		int FertilizerSpeed = 2;
@@ -123,7 +123,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void DayEnded();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		void Plant(UInventoryItem * item);
 
 	UFUNCTION()
@@ -134,5 +134,5 @@ public:
 
 	/* TODO: Change return type to InventoryItem[] when implemented*/
 	UFUNCTION()
-		void Harvest();
+		TArray<UInventoryItem *> Harvest();
 };

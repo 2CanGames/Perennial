@@ -21,8 +21,6 @@ class PERENNIAL_API ACharacterActor : public AActor
 	GENERATED_BODY()
 	
 private:	
-	// Sets default values for this actor's properties
-	ACharacterActor();
 	
 	// Should have the functions below to be a true singleton, but they cause compilation errors??
 	// ACharacterActor(ACharacterActor const&);
@@ -34,7 +32,11 @@ protected:
 
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 
-public:	
+public:
+
+	// Sets default values for this actor's properties
+	ACharacterActor();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
