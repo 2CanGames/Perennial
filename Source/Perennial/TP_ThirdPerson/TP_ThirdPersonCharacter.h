@@ -68,7 +68,7 @@ protected:
 	void Fertilize();
 	void Plant();
 
-	APlantActor* PlantInRange();
+	ACharacterActor* MyActor;
 
 protected:
 	// APawn interface
@@ -76,6 +76,8 @@ protected:
 	// End of APawn interface
 
 	APlantActor* CurrentPlant;
+
+	virtual void BeginPlay() override;
 
 public:
 	/** Returns CameraBoom subobject **/

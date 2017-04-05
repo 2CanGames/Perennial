@@ -239,6 +239,7 @@ void APlantActor::SetIsWatered(bool newBool)
 
 void APlantActor::SetIsHarvestable(bool newBool)
 {
+	//TODO: Eventually programmatically attach fruit/harvest items to bones of Plant model
 }
 
 void APlantActor::SetIsFertilized(bool newBool)

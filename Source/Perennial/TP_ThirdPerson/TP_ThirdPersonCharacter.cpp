@@ -48,6 +48,18 @@ ATP_ThirdPersonCharacter::ATP_ThirdPersonCharacter()
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ATP_ThirdPersonCharacter::OnEndOverlap);
 }
 
+void ATP_ThirdPersonCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterActor::StaticClass(), FoundActors);
+	if (FoundActors.Num() > 0) 
+	{
+		MyActor = (ACharacterActor*)FoundActors[0];
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -212,7 +224,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 		if (!(CurrentPlant->bIsFertilized))
 		{
 			// Check that player has fertilizer
-			if (!ACharacterActor::GetInstance()->DeleteFertilizer())
+			if (!MyActor->DeleteFertilizer())
 			{
 				if (GEngine)
 				{

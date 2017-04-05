@@ -40,7 +40,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	static ACharacterActor* &GetInstance();
+	//static ACharacterActor* &GetInstance();
 
 	void DayEnded();
 
