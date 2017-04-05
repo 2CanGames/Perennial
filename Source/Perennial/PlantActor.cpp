@@ -76,9 +76,10 @@ void APlantActor::DayEnded()
 	//Determine if we need to grow based on how many days we have been alive
 	//if yes, call grow
 	if (DaysAlive >= DaysToGrow) {
-		int GrowIterations = DaysAlive / DaysToGrow;
+		//int GrowIterations = DaysAlive / DaysToGrow;
 		//If fertilizer makes plant grow 2 stages in one day, then grow x amt of iterations
-		for (int i = 0; i < GrowIterations; i++) Grow();
+		//for (int i = 0; i < GrowIterations; i++) Grow();
+		Grow();
 	}
 
 	//Revert isWatered state
@@ -99,7 +100,7 @@ void APlantActor::InitPlant(FString name)
 {
 	if (_CurrentStage != EPlantStage::NO_PLANT) return;
 
-	static const FString ContextString(TEXT("GENERAL"));
+	/*static const FString ContextString(TEXT("GENERAL"));
 
 	FPlantLookupTable* PLookupRow = PlantLookupTable->FindRow<FPlantLookupTable>(
 		*name,
@@ -119,7 +120,7 @@ void APlantActor::InitPlant(FString name)
 		}
 	}
 
-	MeshMap.Emplace(EPlantStage::GROWN, PLookupRow->Plant_Model.Get());
+	MeshMap.Emplace(EPlantStage::GROWN, PLookupRow->Plant_Model.Get());*/
 
 	PlantName = name.ToLower();
 	//Set default parameters
@@ -173,6 +174,7 @@ void APlantActor::Grow()
 	//Updates the stage 
 	switch (_CurrentStage) {
 	case EPlantStage::NO_PLANT:
+		InitPlant("tomato");
 		return;
 	case EPlantStage::SEED:
 		SetStage(EPlantStage::BUDDING);

@@ -65,7 +65,7 @@ protected:
 		class USkeletalMeshComponent* PlantMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
-		int DaysToGrow = 1;
+		int DaysToGrow = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
 		int FertilizerSpeed = 2;

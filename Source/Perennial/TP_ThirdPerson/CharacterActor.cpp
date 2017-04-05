@@ -19,7 +19,7 @@ void ACharacterActor::BeginPlay()
 
 	if (!PlayerInventory)
 	{
-		PlayerInventory = new UInventory();
+		PlayerInventory = NewObject<UInventory>(UInventory::StaticClass());
 	}
 
 	_CurrentStage = YOUNG;
