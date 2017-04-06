@@ -32,12 +32,15 @@ protected:
 
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 
-public:	
+public:
+
 	// Sets default values for this actor's properties
 	ACharacterActor();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	//static ACharacterActor* &GetInstance();
 
 	void DayEnded();
 

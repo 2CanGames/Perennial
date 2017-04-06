@@ -51,11 +51,10 @@ ATP_ThirdPersonCharacter::ATP_ThirdPersonCharacter()
 void ATP_ThirdPersonCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// Find CharacterActor
+
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterActor::StaticClass(), FoundActors);
-	if (FoundActors.Num() != 0)
+	if (FoundActors.Num() > 0) 
 	{
 		MyActor = (ACharacterActor*)FoundActors[0];
 	}
@@ -190,6 +189,8 @@ void ATP_ThirdPersonCharacter::Harvest()
 
 void ATP_ThirdPersonCharacter::Water()
 {
+	//APlantActor* Plant = PlantInRange();
+
 	if (CurrentPlant)
 	{
 		// Check if plant is waterable
@@ -217,6 +218,8 @@ void ATP_ThirdPersonCharacter::Fertilize()
 {
 	if (CurrentPlant)
 	{
+		// Check if player has fertilizer
+
 		// Check if plant is already fertilized
 		if (!(CurrentPlant->bIsFertilized))
 		{
