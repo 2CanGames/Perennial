@@ -30,10 +30,11 @@ void APerennialGameStateBase::advanceToNextDay() {
 
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(
-			GEngine->ScreenMessages.Num() + 1,
+			-1,
 			6.0f,
 			FColor::Green,
-			"Current Day: " + FString::FromInt(currentAmountOfDays) + " Current Season: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("Season"), true)->GetEnumName((int32)currentSeason)
+			"Current Day: " + FString::FromInt(currentAmountOfDays) + 
+			" Current Season: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("Season"), true)->GetEnumName((int32)currentSeason)
 		);
 
 	broadcast();
@@ -42,7 +43,7 @@ void APerennialGameStateBase::advanceToNextDay() {
 void APerennialGameStateBase::broadcast() {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(
-			GEngine->ScreenMessages.Num() + 1,
+			-1,
 			6.0f,
 			FColor::Green,
 			"Broadcasting to " + FString::FromInt(listeners.Num()) + " listeners"
