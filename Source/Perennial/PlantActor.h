@@ -73,7 +73,7 @@ protected:
 		int FertilizerSpeed = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Status")
-		class UBillboardComponent* WaterIcon;
+		class UMaterialBillboardComponent* WaterIcon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Status")
 		class UParticleSystemComponent* FertilizerEffect;

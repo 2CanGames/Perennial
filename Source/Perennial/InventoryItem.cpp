@@ -4,7 +4,10 @@
 #include "InventoryItem.h"
 
 UInventoryItem::UInventoryItem() {
-	plantName = "DEFAULT_PLANT_NAME";
+	if (GetName().IsEmpty())
+		plantName = "DEFAULT_PLANT_NAME";
+	else
+		plantName = GetName();
 }
 
 UInventoryItem::UInventoryItem(FString plantName)
