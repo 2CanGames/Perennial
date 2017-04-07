@@ -43,6 +43,8 @@ public:
 
 	bool DeleteFertilizer();
 
+	bool PlantSeed();
+
 	UInventory* PlayerInventory;
 
 	ECharacterStage _CurrentStage;

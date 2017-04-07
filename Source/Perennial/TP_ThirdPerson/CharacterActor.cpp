@@ -68,3 +68,14 @@ bool ACharacterActor::DeleteFertilizer()
 		return true;
 	}
 }
+
+bool ACharacterActor::PlantSeed()
+{
+	// Open inventory
+	// Player clicks on seeds they want to plant
+	// Grab pointer of seeds they clicked on, pass to Plant method
+	// Plant->Plant(Inventory item seed);
+
+	// Delete seeds from player inventory
+	return true;
+}

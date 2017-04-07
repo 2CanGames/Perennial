@@ -253,8 +253,6 @@ void ATP_ThirdPersonCharacter::Plant()
 {
 	if (CurrentPlant)
 	{
-		// Check if player has seeds
-
 		// Check if the dirt mound already has a plant
 		if (CurrentPlant->GetStage() == EPlantStage::NO_PLANT)
 		{
@@ -263,10 +261,8 @@ void ATP_ThirdPersonCharacter::Plant()
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Plant!"));
 			}
 
-			// Call plant's plant seed method
-			//Plant->Plant(Inventory item seed);
-
-			// Deduct seeds from player inventory?
+			// Pass to Character Actor
+			MyActor->PlantSeed();
 		}
 		else
 		{
