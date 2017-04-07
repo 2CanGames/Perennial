@@ -43,14 +43,14 @@ APlantActor::APlantActor()
 void APlantActor::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	SetIsWatered(false);
 	SetIsFertilized(false);
 }
 
 void APlantActor::EndPlay(EEndPlayReason::Type Reason)
 {
-
+	
 }
 
 void APlantActor::processEvent()

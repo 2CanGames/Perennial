@@ -6,6 +6,7 @@
 #include "Engine/DataTable.h"
 #include "InventoryItem.h"
 #include "Harvestable.h"
+#include "EventListener.h"
 #include "PlantActor.generated.h"
 
 UENUM(BlueprintType)
@@ -27,7 +28,7 @@ enum EPlantStage {
 class PlantEventListener;
 
 UCLASS()
-class PERENNIAL_API APlantActor : public AActor
+class PERENNIAL_API APlantActor : public AEventListener
 {
 	GENERATED_BODY()
 
@@ -36,9 +37,6 @@ public:
 	APlantActor();
 
 private:
-
-	//Listener for when TimeController broadcasts the day ending
-	PlantEventListener* OnDayEndedListener;
 
 	//Data lookup table for plant information
 	UDataTable* PlantLookupTable;
@@ -105,6 +103,8 @@ public:
 	void SetIsHarvestable(bool newBool);
 
 	void SetIsFertilized(bool newBool);
+
+	void processEvent();
 
 	/* Blueprint Accessible Functions */
 
