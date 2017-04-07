@@ -22,7 +22,7 @@ struct PERENNIAL_API FPlantLookupTable : public FTableRowBase
 		int Days_To_Next_Stage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Plant Assets")
-		TAssetPtr<USkeletalMesh> Plant_Model;
+		FString Plant_Model;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Assets")
 		FString Plant_Portrait;

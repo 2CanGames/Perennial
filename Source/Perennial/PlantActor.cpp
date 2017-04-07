@@ -76,10 +76,10 @@ void APlantActor::DayEnded()
 	//Determine if we need to grow based on how many days we have been alive
 	//if yes, call grow
 	if (DaysAlive >= DaysToGrow) {
-		//int GrowIterations = DaysAlive / DaysToGrow;
+		int GrowIterations = DaysAlive / DaysToGrow;
 		//If fertilizer makes plant grow 2 stages in one day, then grow x amt of iterations
-		//for (int i = 0; i < GrowIterations; i++) Grow();
-		Grow();
+		for (int i = 0; i < GrowIterations; i++)
+			Grow();
 	}
 
 	//Revert isWatered state
@@ -100,7 +100,10 @@ void APlantActor::InitPlant(FString name)
 {
 	if (_CurrentStage != EPlantStage::NO_PLANT) return;
 
-	/*static const FString ContextString(TEXT("GENERAL"));
+	if (name.IsEmpty())
+		name = "apple";
+
+	static const FString ContextString(TEXT("GENERAL"));
 
 	FPlantLookupTable* PLookupRow = PlantLookupTable->FindRow<FPlantLookupTable>(
 		*name,
@@ -120,14 +123,17 @@ void APlantActor::InitPlant(FString name)
 		}
 	}
 
-	MeshMap.Emplace(EPlantStage::GROWN, PLookupRow->Plant_Model.Get());*/
-
+	//Dynamically load in harvest mesh
+	HarvestMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), NULL, *PLookupRow->Plant_Model));
+	Quality = PLookupRow->Quality;
+	//DaysToGrow = PLookupRow->Days_To_Next_Stage;
+	SetType(PLookupRow->Plant_Type);
 	PlantName = name.ToLower();
 	//Set default parameters
 	SetStage(EPlantStage::SEED);
 	SetIsWatered(false);
 	SetIsFertilized(false);
-	bIsHarvestable = false;
+	SetIsHarvestable(false);		
 	DaysAlive = 0;
 }
 
@@ -174,7 +180,8 @@ void APlantActor::Grow()
 	//Updates the stage 
 	switch (_CurrentStage) {
 	case EPlantStage::NO_PLANT:
-		InitPlant("tomato");
+		//TODO: Get rid of initplant. 
+		InitPlant(PlantName);
 		return;
 	case EPlantStage::SEED:
 		SetStage(EPlantStage::BUDDING);
@@ -183,7 +190,7 @@ void APlantActor::Grow()
 		SetStage(EPlantStage::GROWN);
 		break;
 	case EPlantStage::GROWN:
-		bIsHarvestable = true;
+		SetIsHarvestable(true);
 		break;
 	};
 
@@ -200,7 +207,7 @@ void APlantActor::Die()
 	//Reset
 	SetIsWatered(false);
 	SetIsFertilized(false);
-	bIsHarvestable = false;
+	SetIsHarvestable(false);
 	Quality = 0;
 	DaysAlive = 0;
 }
@@ -211,6 +218,7 @@ void APlantActor::Die()
 void APlantActor::SetType(EPlantType newType)
 {
 	_Type = newType;
+	MeshMap.Emplace(EPlantStage::GROWN, *(GrownMeshMap.Find(_Type)));
 }
 /*
 	Sets the type of plant given a type in string format
@@ -219,9 +227,10 @@ void APlantActor::SetType(FString newType)
 {
 	newType = newType.ToLower();
 
-	if (newType == "tree") _Type = EPlantType::TREE;
-	else if (newType == "vine") _Type = EPlantType::VINE;
-	else if (newType == "root") _Type = EPlantType::ROOT;
+	if (newType == "tree") SetType(EPlantType::TREE);
+	else if (newType == "vine") SetType(EPlantType::VINE);
+	else if (newType == "root") SetType(EPlantType::ROOT);
+	else if (newType == "bush") SetType(EPlantType::BUSH);
 }
 
 void APlantActor::SetIsWatered(bool newBool)
@@ -239,7 +248,26 @@ void APlantActor::SetIsWatered(bool newBool)
 
 void APlantActor::SetIsHarvestable(bool newBool)
 {
-	//TODO: Eventually programmatically attach fruit/harvest items to bones of Plant model
+	bIsHarvestable = newBool;
+	TArray<FName> Sockets = PlantMesh->GetAllSocketNames();
+	if (bIsHarvestable) {
+		
+		for (auto Socket : Sockets) {
+			if (!Socket.ToString().Contains("Fruit")) continue;
+			const USkeletalMeshSocket* s = PlantMesh->GetSocketByName(Socket);
+			AHarvestable * harvestable = GetWorld()->SpawnActor<AHarvestable>(AHarvestable::StaticClass());
+			Harvestables.Add(harvestable);
+			harvestable->SetHarvestableMesh(HarvestMesh);
+			harvestable->AttachToComponent(PlantMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
+		}
+	}
+	else {
+		for (auto Harvest : Harvestables) {
+			Harvest->RemoveFromRoot();
+			Harvest->Destroy();
+		}
+	}
+	
 }
 
 void APlantActor::SetIsFertilized(bool newBool)

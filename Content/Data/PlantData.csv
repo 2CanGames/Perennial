@@ -1,0 +1,7 @@
+---,Plant_Type,Quality,Days_To_Next_Stage,Plant_Model,Plant_Portrait
+tomato,"vine","10","2","",""
+apple,"tree","15","4","SkeletalMesh'/Game/Models/apple.apple'",""
+strawberry,"bush","25","4","SkeletalMesh'/Game/Models/strawberry.strawberry'",""
+lemon,"tree","50","5","SkeletalMesh'/Game/Models/lemon.lemon'",""
+lime,"tree","50","5","",""
+peach,"tree","75","5","",""
