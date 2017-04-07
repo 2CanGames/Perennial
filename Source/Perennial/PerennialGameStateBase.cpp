@@ -15,6 +15,7 @@ void APerennialGameStateBase::advanceToNextDay() {
 		switch (seasonNumber) {
 		case 0:
 			currentSeason = Season::SPRING;
+			currentAmountOfYears++;
 			break;
 		case 1:
 			currentSeason = Season::SUMMER;
@@ -66,4 +67,8 @@ void APerennialGameStateBase::eventListenerRemove(AEventListener *listener) {
 
 int APerennialGameStateBase::getCurrentAmountOfDays() {
 	return currentAmountOfDays;
+}
+
+int APerennialGameStateBase::getCurrentAmountOfYears() {
+	return currentAmountOfYears;
 }

@@ -29,6 +29,8 @@ private:
 	const int DAYS_PER_SEASON = 5;
 	const int NUM_OF_SEASONS = 4;
 	int currentAmountOfDays = 0;
+	int currentAmountOfYears = 0;
+
 	Season currentSeason = Season::SPRING;
 
 	TArray<AEventListener*> listeners;
@@ -45,5 +47,9 @@ public:
 
 	void eventListenerRemove(AEventListener *listener);
 
+	UFUNCTION(BlueprintCallable)
 	int getCurrentAmountOfDays();
+
+	UFUNCTION(BlueprintCallable)
+	int getCurrentAmountOfYears();
 };
