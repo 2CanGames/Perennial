@@ -3,8 +3,8 @@
 #pragma once
 
 #include "Inventory.h"
+#include "EventListener.h"
 #include "GameFramework/Actor.h"
-#include "CharacterEventListener.h"
 #include "CharacterActor.generated.h"
 
 UENUM(BlueprintType)
@@ -16,7 +16,7 @@ enum ECharacterStage
 };
 
 UCLASS()
-class PERENNIAL_API ACharacterActor : public AActor
+class PERENNIAL_API ACharacterActor : public AEventListener
 {
 	GENERATED_BODY()
 	
@@ -32,12 +32,17 @@ protected:
 
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 
-public:	
+public:
+
 	// Sets default values for this actor's properties
 	ACharacterActor();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	//static ACharacterActor* &GetInstance();
+
+	void processEvent();
 
 	void DayEnded();
 
@@ -48,8 +53,6 @@ public:
 	UInventory* PlayerInventory;
 
 	ECharacterStage _CurrentStage;
-
-	CharacterEventListener* OnDayEndedListener;
 
 	int NumFertilizers;
 

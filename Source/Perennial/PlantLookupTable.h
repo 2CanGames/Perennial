@@ -21,7 +21,7 @@ struct PERENNIAL_API FPlantLookupTable : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
 		int Days_To_Next_Stage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Assets")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Plant Assets")
 		FString Plant_Model;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Assets")

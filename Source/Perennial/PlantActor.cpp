@@ -1,8 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Perennial.h"
 #include "PlantLookupTable.h"
-#include "PlantEventListener.h"
 #include <memory>
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "PlantActor.h"
@@ -11,6 +10,7 @@
 // Sets default values
 APlantActor::APlantActor()
 {
+	
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	
@@ -43,35 +43,21 @@ APlantActor::APlantActor()
 void APlantActor::BeginPlay()
 {
 	Super::BeginPlay();
-	OnDayEndedListener = new PlantEventListener(this);
-	static const FString ContextString(TEXT("GENERAL"));
-
-	FPlantLookupTable* PLookupRow = PlantLookupTable->FindRow<FPlantLookupTable>(
-		*PlantName,
-		ContextString
-		);
-
-	if (PLookupRow) {
-		SetType(PLookupRow->Plant_Type);
-		Quality = PLookupRow->Quality;
-		if (GEngine) {
-			GEngine->AddOnScreenDebugMessage(
-				GEngine->ScreenMessages.Num() + 1,
-				6.0f,
-				FColor::Green,
-				*PLookupRow->Plant_Type
-			);
-		}
-	}
-
+	
 	SetIsWatered(false);
 	SetIsFertilized(false);
 }
 
 void APlantActor::EndPlay(EEndPlayReason::Type Reason)
 {
-	delete OnDayEndedListener;
+	
 }
+
+void APlantActor::processEvent()
+{
+	DayEnded();
+}
+
 
 void APlantActor::DayEnded()
 {
@@ -95,7 +81,10 @@ void APlantActor::DayEnded()
 	//Determine if we need to grow based on how many days we have been alive
 	//if yes, call grow
 	if (DaysAlive >= DaysToGrow) {
-		Grow();
+		int GrowIterations = DaysAlive / DaysToGrow;
+		//If fertilizer makes plant grow 2 stages in one day, then grow x amt of iterations
+		for (int i = 0; i < GrowIterations; i++)
+			Grow();
 	}
 
 	//Revert isWatered state
@@ -116,12 +105,40 @@ void APlantActor::InitPlant(FString name)
 {
 	if (_CurrentStage != EPlantStage::NO_PLANT) return;
 
+	if (name.IsEmpty())
+		name = "apple";
+
+	static const FString ContextString(TEXT("GENERAL"));
+
+	FPlantLookupTable* PLookupRow = PlantLookupTable->FindRow<FPlantLookupTable>(
+		*name,
+		ContextString
+		);
+
+	if (PLookupRow) {
+		SetType(PLookupRow->Plant_Type);
+		Quality = PLookupRow->Quality;
+		if (GEngine) {
+			GEngine->AddOnScreenDebugMessage(
+				GEngine->ScreenMessages.Num() + 1,
+				6.0f,
+				FColor::Green,
+				*PLookupRow->Plant_Type
+			);
+		}
+	}
+
+	//Dynamically load in harvest mesh
+	HarvestMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), NULL, *PLookupRow->Plant_Model));
+	Quality = PLookupRow->Quality;
+	//DaysToGrow = PLookupRow->Days_To_Next_Stage;
+	SetType(PLookupRow->Plant_Type);
 	PlantName = name.ToLower();
 	//Set default parameters
 	SetStage(EPlantStage::SEED);
 	SetIsWatered(false);
 	SetIsFertilized(false);
-	bIsHarvestable = false;
+	SetIsHarvestable(false);		
 	DaysAlive = 0;
 }
 
@@ -133,11 +150,13 @@ void APlantActor::Plant(UInventoryItem * item)
 {
 	//Do not do anything if my state is anything but NO_PLANT
 	if (_CurrentStage != EPlantStage::NO_PLANT) return;
-
+	if (!item) {
+		item = CreateDefaultSubobject<UInventoryItem>("item");
+		
+	}
 	//Init plant based on type of item
 	Quality = item->getQuality();
-	//TODO: Eventually get name from item
-	InitPlant("tomato");
+	InitPlant(item->getPlantName());
 }
 
 /*
@@ -166,8 +185,8 @@ void APlantActor::Grow()
 	//Updates the stage 
 	switch (_CurrentStage) {
 	case EPlantStage::NO_PLANT:
-		//TODO: remove this once we have planting working
-		InitPlant("tomato");
+		//TODO: Get rid of initplant. 
+		InitPlant(PlantName);
 		return;
 	case EPlantStage::SEED:
 		SetStage(EPlantStage::BUDDING);
@@ -176,7 +195,7 @@ void APlantActor::Grow()
 		SetStage(EPlantStage::GROWN);
 		break;
 	case EPlantStage::GROWN:
-		bIsHarvestable = true;
+		SetIsHarvestable(true);
 		break;
 	};
 
@@ -193,7 +212,7 @@ void APlantActor::Die()
 	//Reset
 	SetIsWatered(false);
 	SetIsFertilized(false);
-	bIsHarvestable = false;
+	SetIsHarvestable(false);
 	Quality = 0;
 	DaysAlive = 0;
 }
@@ -204,6 +223,7 @@ void APlantActor::Die()
 void APlantActor::SetType(EPlantType newType)
 {
 	_Type = newType;
+	MeshMap.Emplace(EPlantStage::GROWN, *(GrownMeshMap.Find(_Type)));
 }
 /*
 	Sets the type of plant given a type in string format
@@ -212,9 +232,10 @@ void APlantActor::SetType(FString newType)
 {
 	newType = newType.ToLower();
 
-	if (newType == "tree") _Type = EPlantType::TREE;
-	else if (newType == "vine") _Type = EPlantType::VINE;
-	else if (newType == "root") _Type = EPlantType::ROOT;
+	if (newType == "tree") SetType(EPlantType::TREE);
+	else if (newType == "vine") SetType(EPlantType::VINE);
+	else if (newType == "root") SetType(EPlantType::ROOT);
+	else if (newType == "bush") SetType(EPlantType::BUSH);
 }
 
 void APlantActor::SetIsWatered(bool newBool)
@@ -232,6 +253,26 @@ void APlantActor::SetIsWatered(bool newBool)
 
 void APlantActor::SetIsHarvestable(bool newBool)
 {
+	bIsHarvestable = newBool;
+	TArray<FName> Sockets = PlantMesh->GetAllSocketNames();
+	if (bIsHarvestable) {
+		
+		for (auto Socket : Sockets) {
+			if (!Socket.ToString().Contains("Fruit")) continue;
+			const USkeletalMeshSocket* s = PlantMesh->GetSocketByName(Socket);
+			AHarvestable * harvestable = GetWorld()->SpawnActor<AHarvestable>(AHarvestable::StaticClass());
+			Harvestables.Add(harvestable);
+			harvestable->SetHarvestableMesh(HarvestMesh);
+			harvestable->AttachToComponent(PlantMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
+		}
+	}
+	else {
+		for (auto Harvest : Harvestables) {
+			Harvest->RemoveFromRoot();
+			Harvest->Destroy();
+		}
+	}
+	
 }
 
 void APlantActor::SetIsFertilized(bool newBool)
@@ -261,6 +302,7 @@ EPlantType APlantActor::GetType() const
 void APlantActor::SetStage(EPlantStage newStage)
 {
 	_CurrentStage = newStage;
+	//We want to get the reference to its grown mesh
 	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
 	if (newMesh) {
 		PlantMesh->SetSkeletalMesh(*newMesh, false);
@@ -274,10 +316,13 @@ EPlantStage APlantActor::GetStage() const
 	return _CurrentStage;
 }
 
-void APlantActor::Harvest()
+TArray<UInventoryItem *> APlantActor::Harvest()
 {	
+	TArray<UInventoryItem *> HarvestResult;
 	//Get some fruit and seeds
-
+	for (int i = 0; i < 3; i++) {
+		HarvestResult.Add(new UInventoryItem(PlantName));
+	}
 
 	//Delete this object
 	if (GEngine) {
@@ -288,7 +333,8 @@ void APlantActor::Harvest()
 			TEXT("Harvesting")
 		);
 	}
-	SetStage(EPlantStage::NO_PLANT);
+	
+	Die();
 
-	//return TArray<InventoryItem>();
+	return HarvestResult;
 }

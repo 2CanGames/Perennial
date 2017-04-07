@@ -68,16 +68,16 @@ protected:
 	void Fertilize();
 	void Plant();
 
+	ACharacterActor* MyActor;
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
-	virtual void BeginPlay() override;
-
 	APlantActor* CurrentPlant;
 
-	ACharacterActor* MyActor;
+	virtual void BeginPlay() override;
 
 public:
 	/** Returns CameraBoom subobject **/

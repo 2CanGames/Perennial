@@ -5,13 +5,16 @@
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
 #include "InventoryItem.h"
+#include "Harvestable.h"
+#include "EventListener.h"
 #include "PlantActor.generated.h"
 
 UENUM(BlueprintType)
 enum EPlantType {
 	TREE,
 	ROOT,
-	VINE
+	VINE,
+	BUSH
 };
 
 UENUM(BlueprintType)
@@ -25,7 +28,7 @@ enum EPlantStage {
 class PlantEventListener;
 
 UCLASS()
-class PERENNIAL_API APlantActor : public AActor
+class PERENNIAL_API APlantActor : public AEventListener
 {
 	GENERATED_BODY()
 
@@ -34,9 +37,6 @@ public:
 	APlantActor();
 
 private:
-
-	//Listener for when TimeController broadcasts the day ending
-	PlantEventListener* OnDayEndedListener;
 
 	//Data lookup table for plant information
 	UDataTable* PlantLookupTable;
@@ -49,6 +49,8 @@ private:
 
 	//The type of plant this plant is currently
 	EPlantType _Type;
+
+	TArray<AHarvestable *> Harvestables;
 
 	//Initialize the plant given a name
 	void InitPlant(FString name);
@@ -65,7 +67,7 @@ protected:
 		class USkeletalMeshComponent* PlantMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
-		int DaysToGrow = 0;
+		int DaysToGrow = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
 		int FertilizerSpeed = 2;
@@ -75,6 +77,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Status")
 		class UParticleSystemComponent* FertilizerEffect;
+
+	USkeletalMesh* HarvestMesh;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -100,7 +104,12 @@ public:
 
 	void SetIsFertilized(bool newBool);
 
+	void processEvent();
+
 	/* Blueprint Accessible Functions */
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
+		TMap<TEnumAsByte<EPlantType>, USkeletalMesh*> GrownMeshMap;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
 		TMap<TEnumAsByte<EPlantStage>, USkeletalMesh*> MeshMap;
@@ -117,13 +126,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 		EPlantStage GetStage() const;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Plant Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
 		FString PlantName;
 
 	UFUNCTION(BlueprintCallable)
 		void DayEnded();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		void Plant(UInventoryItem * item);
 
 	UFUNCTION()
@@ -134,5 +143,5 @@ public:
 
 	/* TODO: Change return type to InventoryItem[] when implemented*/
 	UFUNCTION()
-		void Harvest();
+		TArray<UInventoryItem *> Harvest();
 };
