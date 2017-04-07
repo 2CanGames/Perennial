@@ -8,12 +8,13 @@
 #include "PerennialGameStateBase.generated.h"
 
 // Season Enumeration
-enum class Season
+UENUM(BlueprintType)
+enum class Season : uint8
 {
-	SPRING,
-	SUMMER,
-	FALL,
-	WINTER
+	SPRING	UMETA(DisplayName = "SPRING"),
+	SUMMER	UMETA(DisplayName = "SUMMER"),
+	FALL	UMETA(DisplayName = "FALL"),
+	WINTER	UMETA(DisplayName = "WINTER")
 };
 
 /**

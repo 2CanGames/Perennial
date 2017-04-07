@@ -40,13 +40,6 @@ void ACharacterActor::Tick(float DeltaTime)
 
 void ACharacterActor::processEvent()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(
-			GEngine->ScreenMessages.Num() + 1,
-			6.0f,
-			FColor::Green,
-			"ACharacterActor processing event"
-		);
 	DayEnded();
 }
 

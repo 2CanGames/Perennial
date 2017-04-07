@@ -7,34 +7,35 @@
 void APerennialGameStateBase::advanceToNextDay() {
 	currentAmountOfDays++;
 
-	/*if (currentAmountOfDays % DAYS_PER_SEASON == 0) {
+	if (currentAmountOfDays % DAYS_PER_SEASON == 0) {
 
 		int numberOfSeasonsPassed = currentAmountOfDays / DAYS_PER_SEASON;
 		int seasonNumber = numberOfSeasonsPassed % NUM_OF_SEASONS;
 
 		switch (seasonNumber) {
 		case 0:
-		currentSeason = Season::SPRING;
-		break;
+			currentSeason = Season::SPRING;
+			break;
 		case 1:
-		currentSeason = Season::SUMMER;
-		break;
+			currentSeason = Season::SUMMER;
+			break;
 		case 2:
-		currentSeason = Season::FALL;
-		break;
+			currentSeason = Season::FALL;
+			break;
 		case 3:
-		currentSeason = Season::WINTER;
-		break;
+			currentSeason = Season::WINTER;
+			break;
 		}
-	}*/
+	}
 
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(
 			GEngine->ScreenMessages.Num() + 1,
 			6.0f,
 			FColor::Green,
-			"Current Day: " + FString::FromInt(currentAmountOfDays)
+			"Current Day: " + FString::FromInt(currentAmountOfDays) + " Current Season: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("Season"), true)->GetEnumName((int32)currentSeason)
 		);
+
 	broadcast();
 }
 

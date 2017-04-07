@@ -55,13 +55,6 @@ void APlantActor::EndPlay(EEndPlayReason::Type Reason)
 
 void APlantActor::processEvent()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(
-			GEngine->ScreenMessages.Num() + 1,
-			6.0f,
-			FColor::Green,
-			"APlantActor processing event"
-		);
 	DayEnded();
 }
 
