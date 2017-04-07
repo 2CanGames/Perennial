@@ -8,12 +8,12 @@ class APlantActor;
 /**
  * 
  */
-class PERENNIAL_API PlantEventListener : EventListener
+class PERENNIAL_API PlantEventListener : AEventListener
 {
 private:
 	APlantActor * MyActor;
 public:
-	PlantEventListener(APlantActor * actor) : EventListener() {
+	PlantEventListener(APlantActor * actor) : AEventListener() {
 		MyActor = actor; 
 	}
 	void processEvent();

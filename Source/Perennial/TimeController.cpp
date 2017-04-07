@@ -39,26 +39,24 @@ void ATimeController::advanceToNextDay() {
 			currentSeason = Season::WINTER;
 			break;
 		}
-	}
-
-	broadcast();*/
+	}*/
 	broadcast();
 }
 
 void ATimeController::broadcast() {
 
-	std::vector<EventListener*>::iterator itr;
+	std::vector<AEventListener*>::iterator itr;
 	for (itr = listeners.begin(); itr < listeners.end(); ++itr)
 	{
 		(*itr)->processEvent();
 	}
 }
 
-void ATimeController::eventListenerSignUp(EventListener *listener) {
+void ATimeController::eventListenerSignUp(AEventListener *listener) {
 	listeners.push_back(listener);
 }
 
-void ATimeController::eventListenerRemove(EventListener *listener) {
+void ATimeController::eventListenerRemove(AEventListener *listener) {
 	auto itr = std::find(listeners.begin(), listeners.end(), listener);
 	if(itr != listeners.end())
 		listeners.erase(itr);

@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "GameFramework/Actor.h"
-#include "EventListener.h"
+#include "GameFramework/Actor.h" 
 #include "EventListener.generated.h"
 
 /**
@@ -15,11 +14,15 @@ class PERENNIAL_API AEventListener : public AActor
 {
 	GENERATED_BODY()
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 public:
 
-	EventListener();
-	~EventListener();
+	AEventListener();
+	~AEventListener();
 
 	// process event with derived class behavior
-	virtual void processEvent() = 0;
+	virtual void processEvent();
 };

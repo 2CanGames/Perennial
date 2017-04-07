@@ -8,13 +8,13 @@ class ACharacterActor;
 /**
  * 
  */
-class PERENNIAL_API CharacterEventListener : EventListener
+class PERENNIAL_API CharacterEventListener : AEventListener
 {
 private:
 	ACharacterActor * MyActor;
 
 public:
-	CharacterEventListener(ACharacterActor * actor) : EventListener() 
+	CharacterEventListener(ACharacterActor * actor) : AEventListener()
 	{
 		MyActor = actor;
 	};

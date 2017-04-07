@@ -1,8 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Perennial.h"
 #include "PlantLookupTable.h"
-#include "PlantEventListener.h"
 #include <memory>
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "PlantActor.h"
@@ -11,6 +10,7 @@
 // Sets default values
 APlantActor::APlantActor()
 {
+	
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	
@@ -43,7 +43,6 @@ APlantActor::APlantActor()
 void APlantActor::BeginPlay()
 {
 	Super::BeginPlay();
-	OnDayEndedListener = new PlantEventListener(this);
 
 	SetIsWatered(false);
 	SetIsFertilized(false);
@@ -51,8 +50,21 @@ void APlantActor::BeginPlay()
 
 void APlantActor::EndPlay(EEndPlayReason::Type Reason)
 {
-	delete OnDayEndedListener;
+
 }
+
+void APlantActor::processEvent()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(
+			GEngine->ScreenMessages.Num() + 1,
+			6.0f,
+			FColor::Green,
+			"APlantActor processing event"
+		);
+	DayEnded();
+}
+
 
 void APlantActor::DayEnded()
 {

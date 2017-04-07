@@ -25,18 +25,29 @@ void ACharacterActor::BeginPlay()
 	_CurrentStage = YOUNG;
 	DaysAlive = 0;
 	NumFertilizers = 3;
-	OnDayEndedListener = new CharacterEventListener(this);
 }
 
 void ACharacterActor::EndPlay(EEndPlayReason::Type Reason)
 {
-	delete OnDayEndedListener;
+
 }
 
 // Called every frame
 void ACharacterActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ACharacterActor::processEvent()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(
+			GEngine->ScreenMessages.Num() + 1,
+			6.0f,
+			FColor::Green,
+			"ACharacterActor processing event"
+		);
+	DayEnded();
 }
 
 void ACharacterActor::DayEnded()

@@ -7,6 +7,15 @@
 #include "GameFramework/GameStateBase.h"
 #include "PerennialGameStateBase.generated.h"
 
+// Season Enumeration
+enum class Season
+{
+	SPRING,
+	SUMMER,
+	FALL,
+	WINTER
+};
+
 /**
  * 
  */
@@ -16,19 +25,24 @@ class PERENNIAL_API APerennialGameStateBase : public AGameStateBase
 	GENERATED_BODY()
 	
 private:
-	int days = 0;
+	const int DAYS_PER_SEASON = 5;
+	const int NUM_OF_SEASONS = 4;
+	int currentAmountOfDays = 0;
+	Season currentSeason = Season::SPRING;
 
-	TArray<EventListener*> listeners;
+	TArray<AEventListener*> listeners;
 public:
 
 	// advances to the next day and broadcasts an event to all listenters
 	UFUNCTION(BlueprintCallable)
 	void advanceToNextDay();
 
-	// signs up a EventListener to the TimeController to receive broadcasts
-	void eventListenerSignUp(EventListener *listener);
+	void broadcast();
 
-	void eventListenerRemove(EventListener *listener);
+	// signs up a EventListener to the TimeController to receive broadcasts
+	void eventListenerSignUp(AEventListener *listener);
+
+	void eventListenerRemove(AEventListener *listener);
 
 	int getCurrentAmountOfDays();
 };

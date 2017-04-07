@@ -27,7 +27,7 @@ private:
 	const int NUM_OF_SEASONS = 4;
 	int currentAmountOfDays = 0;
 	Season currentSeason = Season::SPRING;
-	std::vector<EventListener*> listeners;
+	std::vector<AEventListener*> listeners;
 
 	static ATimeController *instance;
 
@@ -46,9 +46,9 @@ public:
 	void advanceToNextDay();
 
 	// signs up a EventListener to the TimeController to receive broadcasts
-	void eventListenerSignUp(EventListener *listener);
+	void eventListenerSignUp(AEventListener *listener);
 
-	void eventListenerRemove(EventListener *listener);
+	void eventListenerRemove(AEventListener *listener);
 
 	int getCurrentAmountOfDays();
 };
