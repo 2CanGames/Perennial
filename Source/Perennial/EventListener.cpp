@@ -2,12 +2,14 @@
 
 #include "Perennial.h"
 #include "EventListener.h"
-#include "TimeController.h"
+
+//#include "TimeController.h"
 
 EventListener::EventListener() {
-	ATimeController::getInstance()->eventListenerSignUp(this);
+	
+	//ATimeController::getInstance()->eventListenerSignUp(this);
 }
 
 EventListener::~EventListener() {
-	ATimeController::getInstance()->eventListenerRemove(this);
+	//ATimeController::getInstance()->eventListenerRemove(this);
 }
