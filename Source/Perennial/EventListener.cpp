@@ -2,12 +2,27 @@
 
 #include "Perennial.h"
 #include "EventListener.h"
-#include "TimeController.h"
 
-EventListener::EventListener() {
-	ATimeController::getInstance()->eventListenerSignUp(this);
+#include "PerennialGameStateBase.h"
+
+
+AEventListener::AEventListener() {
+
 }
 
-EventListener::~EventListener() {
-	ATimeController::getInstance()->eventListenerRemove(this);
+AEventListener::~AEventListener() {
+}
+
+// Called when the game starts or when spawned
+void AEventListener::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (GetWorld() != NULL) {
+		GetWorld()->GetGameState<APerennialGameStateBase>()->eventListenerSignUp(this);
+	}
+}
+
+void AEventListener::processEvent() {
+
 }

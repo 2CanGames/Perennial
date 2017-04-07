@@ -3,8 +3,8 @@
 #pragma once
 
 #include "Inventory.h"
+#include "EventListener.h"
 #include "GameFramework/Actor.h"
-#include "CharacterEventListener.h"
 #include "CharacterActor.generated.h"
 
 UENUM(BlueprintType)
@@ -16,7 +16,7 @@ enum ECharacterStage
 };
 
 UCLASS()
-class PERENNIAL_API ACharacterActor : public AActor
+class PERENNIAL_API ACharacterActor : public AEventListener
 {
 	GENERATED_BODY()
 	
@@ -42,6 +42,8 @@ public:
 
 	//static ACharacterActor* &GetInstance();
 
+	void processEvent();
+
 	void DayEnded();
 
 	bool DeleteFertilizer();
@@ -49,8 +51,6 @@ public:
 	UInventory* PlayerInventory;
 
 	ECharacterStage _CurrentStage;
-
-	CharacterEventListener* OnDayEndedListener;
 
 	int NumFertilizers;
 

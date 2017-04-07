@@ -2,17 +2,27 @@
 
 #pragma once
 
+#include "GameFramework/Actor.h" 
+#include "EventListener.generated.h"
+
 /**
  * An inteface that allows objects to listen to the 
  * TimeController and implement unique behavior
  */
-class PERENNIAL_API EventListener
+UCLASS()
+class PERENNIAL_API AEventListener : public AActor
 {
+	GENERATED_BODY()
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 public:
 
-	EventListener();
-	~EventListener();
+	AEventListener();
+	~AEventListener();
 
 	// process event with derived class behavior
-	virtual void processEvent() = 0;
+	virtual void processEvent();
 };
