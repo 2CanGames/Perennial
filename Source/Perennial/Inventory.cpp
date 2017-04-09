@@ -9,20 +9,19 @@ UInventory::UInventory()
 
 UInventory::~UInventory()
 {
-	items.clear();
+	items.Empty();
 }
 
 void UInventory::addItemToInventory(UInventoryItem *item) {
-	items.push_back(item);
+	items.Add(item);
 }
 
 void UInventory::removeItemToInventory(UInventoryItem *item) {
 
-	std::vector<UInventoryItem*>::iterator itr;
-	for (itr = items.begin(); itr < items.end(); ++itr)
+	for (auto& CurrentItem : items)
 	{
-		if ((*itr) == item) {
-			items.erase(itr);
+		if (CurrentItem == item) {
+			items.Remove(CurrentItem);
 		}
 	}
 }
@@ -31,10 +30,9 @@ int UInventory::getTotalQualityPoints() {
 
 	int totalQualityPoints = 0;
 
-	std::vector<UInventoryItem*>::iterator itr;
-	for (itr = items.begin(); itr < items.end(); ++itr)
+	for (auto& CurrentItem : items)
 	{
-		totalQualityPoints += (*itr)->getQuality();
+		totalQualityPoints += CurrentItem->getQuality();
 	}
 
 	return totalQualityPoints;

@@ -2,6 +2,7 @@
 
 #include "Perennial.h"
 #include "CharacterActor.h"
+#include "PlantActor.h"
 
 
 // Sets default values
@@ -82,4 +83,14 @@ bool ACharacterActor::PlantSeed()
 
 	// Delete seeds from player inventory
 	return true;
+}
+
+void ACharacterActor::Harvest(APlantActor* CurrentPlant)
+{
+	TArray<UInventoryItem *> ItemsForInventory = CurrentPlant->Harvest();
+
+	for (auto& Item : ItemsForInventory) 
+	{
+		PlayerInventory->addItemToInventory(Item);
+	}
 }

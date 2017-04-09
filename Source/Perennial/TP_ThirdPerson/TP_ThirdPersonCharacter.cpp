@@ -174,8 +174,8 @@ void ATP_ThirdPersonCharacter::Harvest()
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Harvest!"));
 			}
 
-			// Call plant's harvest method
-			CurrentPlant->Harvest();
+			// Pass control to Character Actor
+			MyActor->Harvest(CurrentPlant);
 		}
 		else
 		{
@@ -189,8 +189,6 @@ void ATP_ThirdPersonCharacter::Harvest()
 
 void ATP_ThirdPersonCharacter::Water()
 {
-	//APlantActor* Plant = PlantInRange();
-
 	if (CurrentPlant)
 	{
 		// Check if plant is waterable
