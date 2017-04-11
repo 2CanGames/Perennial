@@ -167,7 +167,7 @@ void ATP_ThirdPersonCharacter::Harvest()
 	if (CurrentPlant)
 	{
 		// Check if plant is harvestable
-		if (CurrentPlant->GetStage() == EPlantStage::GROWN)
+		if (CurrentPlant->GetStage() == EPlantStage::GROWN && CurrentPlant->bIsHarvestable)
 		{
 			if (GEngine)
 			{

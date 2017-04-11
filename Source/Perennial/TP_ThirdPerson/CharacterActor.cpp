@@ -3,6 +3,7 @@
 #include "Perennial.h"
 #include "CharacterActor.h"
 #include "PlantActor.h"
+#include "InventoryItem.h"
 
 
 // Sets default values
@@ -26,6 +27,19 @@ void ACharacterActor::BeginPlay()
 	_CurrentStage = YOUNG;
 	DaysAlive = 0;
 	NumFertilizers = 3;
+
+	UInventoryItem* Seed1 = ConstructObject<UInventoryItem>(UInventoryItem::StaticClass(), (UObject*)GetTransientPackage(), *(FString("tomato")));
+	UInventoryItem* Seed2 = ConstructObject<UInventoryItem>(UInventoryItem::StaticClass(), (UObject*)GetTransientPackage(), *(FString("strawberry")));
+	UInventoryItem* Seed3 = ConstructObject<UInventoryItem>(UInventoryItem::StaticClass(), (UObject*)GetTransientPackage(), *(FString("apple")));
+
+	Seed1->isSeed = true;
+	Seed2->isSeed = true;
+	Seed3->isSeed = true;
+
+	PlayerInventory->addItemToInventory(Seed1);
+	PlayerInventory->addItemToInventory(Seed2);
+	PlayerInventory->addItemToInventory(Seed3);
+	
 }
 
 void ACharacterActor::EndPlay(EEndPlayReason::Type Reason)

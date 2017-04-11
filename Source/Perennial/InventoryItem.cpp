@@ -8,6 +8,8 @@ UInventoryItem::UInventoryItem() {
 		plantName = "DEFAULT_PLANT_NAME";
 	else
 		plantName = GetName();
+
+	this->isSeed = false;
 }
 
 UInventoryItem::UInventoryItem(FString plantName)
@@ -20,6 +22,8 @@ UInventoryItem::UInventoryItem(FString plantName)
 		}
 	}
 	this->plantName = plantName;
+
+	this->isSeed = false;
 }
 
 UInventoryItem::~UInventoryItem()

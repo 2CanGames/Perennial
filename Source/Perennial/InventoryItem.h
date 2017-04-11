@@ -28,6 +28,6 @@ public:
 
 	int getQuality();
 	FString getPlantName();
-	
-	
+
+	bool isSeed;
 };
