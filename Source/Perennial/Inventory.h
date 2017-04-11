@@ -17,8 +17,10 @@ UCLASS()
 class PERENNIAL_API UInventory : public UObject
 {
 	GENERATED_BODY()
-private:
-	std::vector<UInventoryItem*> items;
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Inventory Items")
+	TArray<UInventoryItem*> items;
 
 public:
 	UInventory();

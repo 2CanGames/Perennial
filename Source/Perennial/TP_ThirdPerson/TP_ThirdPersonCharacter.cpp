@@ -174,8 +174,8 @@ void ATP_ThirdPersonCharacter::Harvest()
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Harvest!"));
 			}
 
-			// Call plant's harvest method
-			CurrentPlant->Harvest();
+			// Pass control to Character Actor
+			MyActor->Harvest(CurrentPlant);
 		}
 		else
 		{
@@ -189,8 +189,6 @@ void ATP_ThirdPersonCharacter::Harvest()
 
 void ATP_ThirdPersonCharacter::Water()
 {
-	//APlantActor* Plant = PlantInRange();
-
 	if (CurrentPlant)
 	{
 		// Check if plant is waterable
@@ -256,8 +254,6 @@ void ATP_ThirdPersonCharacter::Plant()
 {
 	if (CurrentPlant)
 	{
-		// Check if player has seeds
-
 		// Check if the dirt mound already has a plant
 		if (CurrentPlant->GetStage() == EPlantStage::NO_PLANT)
 		{
@@ -266,10 +262,8 @@ void ATP_ThirdPersonCharacter::Plant()
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Plant!"));
 			}
 
-			// Call plant's plant seed method
-			//Plant->Plant(Inventory item seed);
-
-			// Deduct seeds from player inventory?
+			// Pass to Character Actor
+			MyActor->PlantSeed();
 		}
 		else
 		{

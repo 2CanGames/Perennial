@@ -25,7 +25,7 @@ APlantActor::APlantActor()
 	} 
 
 	PlantMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PlantMesh"));
-	WaterIcon = CreateDefaultSubobject<UBillboardComponent>(TEXT("WaterIcon"));
+	WaterIcon = CreateDefaultSubobject<UMaterialBillboardComponent>(TEXT("WaterIcon"));
 	FertilizerEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FertilizerEffect"));
 
 	RootComponent = PlantMesh;
@@ -321,7 +321,16 @@ TArray<UInventoryItem *> APlantActor::Harvest()
 	TArray<UInventoryItem *> HarvestResult;
 	//Get some fruit and seeds
 	for (int i = 0; i < 3; i++) {
-		HarvestResult.Add(new UInventoryItem(PlantName));
+		UInventoryItem* harvest = ConstructObject<UInventoryItem>(UInventoryItem::StaticClass(), (UObject*)GetTransientPackage(), *PlantName);
+		if (harvest != NULL)
+		{
+			HarvestResult.Add(harvest);
+		}
+		else
+		{
+			// Failed to create object
+		}
+		
 	}
 
 	//Delete this object
@@ -334,7 +343,7 @@ TArray<UInventoryItem *> APlantActor::Harvest()
 		);
 	}
 	
-	Die();
+	SetIsHarvestable(false);
 
 	return HarvestResult;
 }

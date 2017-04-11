@@ -15,8 +15,10 @@ class PERENNIAL_API UInventoryItem : public UObject
 {
 	GENERATED_BODY()
 	
-private:
+protected:
 	UDataTable* PlantLookupTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Name")
 	FString plantName;
 
 public:

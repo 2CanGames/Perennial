@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Inventory.h"
+#include "PlantActor.h"
 #include "EventListener.h"
 #include "GameFramework/Actor.h"
 #include "CharacterActor.generated.h"
@@ -40,14 +41,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//static ACharacterActor* &GetInstance();
-
 	void processEvent();
 
 	void DayEnded();
 
 	bool DeleteFertilizer();
 
+	bool PlantSeed();
+
+	void Harvest(APlantActor* CurrentPlant);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Inventory")
 	UInventory* PlayerInventory;
 
 	ECharacterStage _CurrentStage;
