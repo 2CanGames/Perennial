@@ -43,7 +43,7 @@ APlantActor::APlantActor()
 void APlantActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SetStage(EPlantStage::NO_PLANT);
 	SetIsWatered(false);
 	SetIsFertilized(false);
 }
@@ -319,6 +319,7 @@ EPlantStage APlantActor::GetStage() const
 TArray<UInventoryItem *> APlantActor::Harvest()
 {	
 	TArray<UInventoryItem *> HarvestResult;
+	if (!bIsHarvestable) return HarvestResult;
 	//Get some fruit and seeds
 	for (int i = 0; i < 3; i++) {
 		UInventoryItem* harvest = ConstructObject<UInventoryItem>(UInventoryItem::StaticClass(), (UObject*)GetTransientPackage(), *PlantName);
