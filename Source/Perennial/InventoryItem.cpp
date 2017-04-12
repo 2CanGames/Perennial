@@ -3,15 +3,38 @@
 #include "Perennial.h"
 #include "InventoryItem.h"
 
-UInventoryItem::UInventoryItem() {
-	if (GetName().IsEmpty())
-		plantName = "DEFAULT_PLANT_NAME";
-	else
-		plantName = GetName();
+
+// Sets default values
+AInventoryItem::AInventoryItem()
+{
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+	plantName = "DEFAULT_PLANT_NAME";
+	isSeed = true;
 }
 
-UInventoryItem::UInventoryItem(FString plantName)
+// Called when the game starts or when spawned
+void AInventoryItem::BeginPlay()
 {
+	Super::BeginPlay();
+	
+}
+
+// Called every frame
+void AInventoryItem::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+void AInventoryItem::setPlantName(FString plantName)
+{
+	this->plantName = plantName;
+}
+
+int AInventoryItem::getQuality() {
+	static const FString ContextString(TEXT("GENERAL"));
+
 	if (!PlantLookupTable) {
 		static ConstructorHelpers::FObjectFinder<UDataTable> PlantLookupDataTable_BP(TEXT("DataTable'/Game/Data/PlantData.PlantData'"));
 
@@ -19,15 +42,6 @@ UInventoryItem::UInventoryItem(FString plantName)
 			PlantLookupTable = PlantLookupDataTable_BP.Object;
 		}
 	}
-	this->plantName = plantName;
-}
-
-UInventoryItem::~UInventoryItem()
-{
-}
-
-int UInventoryItem::getQuality() {
-	static const FString ContextString(TEXT("GENERAL"));
 
 	FPlantLookupTable* PLookupRow = PlantLookupTable->FindRow<FPlantLookupTable>(
 		*plantName,
@@ -50,9 +64,15 @@ int UInventoryItem::getQuality() {
 	return 0;
 }
 
-FString UInventoryItem::getPlantName() {
+FString AInventoryItem::getPlantName() {
 	return plantName;
 }
 
+bool AInventoryItem::getIsSeed() {
+	return isSeed;
+}
 
+void AInventoryItem::setIsSeed(bool isSeed) {
+	this->isSeed = isSeed;
+}
 

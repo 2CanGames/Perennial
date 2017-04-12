@@ -133,7 +133,7 @@ public:
 		void DayEnded();
 
 	UFUNCTION(BlueprintCallable)
-		void Plant(UInventoryItem * item);
+		void Plant(AInventoryItem * item);
 
 	UFUNCTION()
 		void Water();
@@ -143,5 +143,5 @@ public:
 
 	/* TODO: Change return type to InventoryItem[] when implemented*/
 	UFUNCTION()
-		TArray<UInventoryItem *> Harvest();
+		TArray<AInventoryItem *> Harvest();
 };

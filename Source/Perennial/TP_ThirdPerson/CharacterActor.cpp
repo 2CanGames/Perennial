@@ -87,7 +87,7 @@ bool ACharacterActor::PlantSeed()
 
 void ACharacterActor::Harvest(APlantActor* CurrentPlant)
 {
-	TArray<UInventoryItem *> ItemsForInventory = CurrentPlant->Harvest();
+	TArray<AInventoryItem *> ItemsForInventory = CurrentPlant->Harvest();
 
 	for (auto& Item : ItemsForInventory) 
 	{

@@ -12,16 +12,25 @@ UInventory::~UInventory()
 	items.Empty();
 }
 
-void UInventory::addItemToInventory(UInventoryItem *item) {
+void UInventory::addItemToInventory(AInventoryItem *item) {
 	items.Add(item);
 }
 
-void UInventory::removeItemToInventory(UInventoryItem *item) {
+void UInventory::removeItemToInventory(AInventoryItem *item) {
 
 	for (auto& CurrentItem : items)
 	{
 		if (CurrentItem == item) {
 			items.Remove(CurrentItem);
+		}
+	}
+}
+
+void UInventory::removeItemToInventory(FString plantName) {
+	for (int i = 0; i < items.Num(); i++) {
+		if (items[i]->getPlantName().Compare(plantName) == 0) {
+			items.RemoveAt(i);
+			return;
 		}
 	}
 }
