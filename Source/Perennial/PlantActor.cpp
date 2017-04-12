@@ -186,7 +186,7 @@ void APlantActor::Grow()
 	switch (_CurrentStage) {
 	case EPlantStage::NO_PLANT:
 		//TODO: Get rid of initplant. 
-		InitPlant(PlantName);
+		//InitPlant(PlantName);
 		return;
 	case EPlantStage::SEED:
 		SetStage(EPlantStage::BUDDING);
@@ -215,6 +215,12 @@ void APlantActor::Die()
 	SetIsHarvestable(false);
 	Quality = 0;
 	DaysAlive = 0;
+	if (Harvestables.Num() != 0) {
+		for (auto Harvest : Harvestables) {
+			Harvest->RemoveFromRoot();
+			Harvest->Destroy();
+		}
+	}
 }
 
 /*
@@ -253,6 +259,7 @@ void APlantActor::SetIsWatered(bool newBool)
 
 void APlantActor::SetIsHarvestable(bool newBool)
 {
+	if (bIsHarvestable) return;
 	bIsHarvestable = newBool;
 	TArray<FName> Sockets = PlantMesh->GetAllSocketNames();
 	if (bIsHarvestable) {
@@ -331,7 +338,13 @@ TArray<AInventoryItem *> APlantActor::Harvest()
 		{
 			// Failed to create object
 		}
-		
+	}
+
+	for (int j = 0; j < 2; j++) {
+		AInventoryItem* harvest = GetWorld()->SpawnActor<AInventoryItem>(AInventoryItem::StaticClass());
+		harvest->setPlantName(*PlantName);
+		harvest->setIsSeed(true);
+		HarvestResult.Add(harvest);
 	}
 
 	//Delete this object

@@ -249,7 +249,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 	}
 }
 
-void ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
+bool ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 {
 	if (!Item->getIsSeed())
 	{
@@ -258,7 +258,7 @@ void ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Not a seed!"));
 		}
 
-		return;
+		return false;
 	}
 
 	if (CurrentPlant)
@@ -273,6 +273,7 @@ void ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 
 			// Pass to Character Actor
 			MyActor->PlantSeed(CurrentPlant, Item);
+			return true;
 		}
 		else
 		{
@@ -280,6 +281,9 @@ void ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already a plant there!"));
 			}
+			return false;
 		}
 	}
+
+	return false;
 }
