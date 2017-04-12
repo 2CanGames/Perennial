@@ -63,10 +63,14 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+	/** Actions mapped to buttons */
 	void Harvest();
 	void Water();
 	void Fertilize();
-	void Plant();
+
+	/** Action not mapped to buttons */
+	UFUNCTION(BlueprintCallable)
+	void Plant(AInventoryItem* Item);
 
 	ACharacterActor* MyActor;
 

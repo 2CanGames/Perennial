@@ -3,6 +3,7 @@
 #include "Perennial.h"
 #include "CharacterActor.h"
 #include "PlantActor.h"
+#include "InventoryItem.h"
 
 
 // Sets default values
@@ -26,6 +27,23 @@ void ACharacterActor::BeginPlay()
 	_CurrentStage = YOUNG;
 	DaysAlive = 0;
 	NumFertilizers = 3;
+
+	AInventoryItem* Seed1 = GetWorld()->SpawnActor<AInventoryItem>();
+	AInventoryItem* Seed2 = GetWorld()->SpawnActor<AInventoryItem>();
+	AInventoryItem* Seed3 = GetWorld()->SpawnActor<AInventoryItem>();
+
+	Seed1->setIsSeed(true);
+	Seed2->setIsSeed(true);
+	Seed3->setIsSeed(true);
+
+	Seed1->setPlantName("tomato");
+	Seed2->setPlantName("lemon");
+	Seed3->setPlantName("strawberry");
+
+	PlayerInventory->addItemToInventory(Seed1);
+	PlayerInventory->addItemToInventory(Seed2);
+	PlayerInventory->addItemToInventory(Seed3);
+	
 }
 
 void ACharacterActor::EndPlay(EEndPlayReason::Type Reason)
@@ -74,21 +92,20 @@ bool ACharacterActor::DeleteFertilizer()
 	}
 }
 
-bool ACharacterActor::PlantSeed()
+void ACharacterActor::PlantSeed(APlantActor* CurrentPlant, AInventoryItem* Seed)
 {
-	// Open inventory
-	// Player clicks on seeds they want to plant
-	// Grab pointer of seeds they clicked on, pass to Plant method
-	// Plant->Plant(Inventory item seed);
+	// Plant the seed
+	CurrentPlant->Plant(Seed);
 
 	// Delete seeds from player inventory
-	return true;
+	PlayerInventory->removeItemToInventory(Seed);
 }
 
 void ACharacterActor::Harvest(APlantActor* CurrentPlant)
 {
-	TArray<UInventoryItem *> ItemsForInventory = CurrentPlant->Harvest();
+	TArray<AInventoryItem *> ItemsForInventory = CurrentPlant->Harvest();
 
+	// Add all items in array to player's inventory
 	for (auto& Item : ItemsForInventory) 
 	{
 		PlayerInventory->addItemToInventory(Item);

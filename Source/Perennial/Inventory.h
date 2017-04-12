@@ -20,15 +20,17 @@ class PERENNIAL_API UInventory : public UObject
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Inventory Items")
-	TArray<UInventoryItem*> items;
+	TArray<AInventoryItem*> items;
 
 public:
 	UInventory();
 	~UInventory();
 
-	void addItemToInventory(UInventoryItem *item);
+	void addItemToInventory(AInventoryItem *item);
 
-	void removeItemToInventory(UInventoryItem *item);
+	void removeItemToInventory(AInventoryItem *item);
+
+	void removeItemToInventory(FString plantName);
 
 	int getTotalQualityPoints();
 	

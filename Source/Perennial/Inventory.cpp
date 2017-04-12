@@ -12,22 +12,41 @@ UInventory::~UInventory()
 	items.Empty();
 }
 
-void UInventory::addItemToInventory(UInventoryItem *item) {
+void UInventory::addItemToInventory(AInventoryItem *item) 
+{
 	items.Add(item);
 }
 
-void UInventory::removeItemToInventory(UInventoryItem *item) {
-
+void UInventory::removeItemToInventory(AInventoryItem *item) 
+{
+	int count = 0;
 	for (auto& CurrentItem : items)
 	{
-		if (CurrentItem == item) {
-			items.Remove(CurrentItem);
+		if (CurrentItem == item) 
+		{
+			items.RemoveAt(count);
+			return;
 		}
+		count++;
 	}
 }
 
-int UInventory::getTotalQualityPoints() {
+void UInventory::removeItemToInventory(FString plantName) 
+{
+	int count = 0;
+	for (auto& CurrentItem : items) 
+	{
+		if (CurrentItem->getPlantName().Compare(plantName) == 0) 
+		{
+			items.RemoveAt(count);
+			return;
+		}
+		count++;
+	}
+}
 
+int UInventory::getTotalQualityPoints() 
+{
 	int totalQualityPoints = 0;
 
 	for (auto& CurrentItem : items)
