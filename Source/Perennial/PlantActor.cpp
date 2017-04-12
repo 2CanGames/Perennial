@@ -259,10 +259,9 @@ void APlantActor::SetIsWatered(bool newBool)
 
 void APlantActor::SetIsHarvestable(bool newBool)
 {
-	if (bIsHarvestable) return;
 	bIsHarvestable = newBool;
 	TArray<FName> Sockets = PlantMesh->GetAllSocketNames();
-	if (bIsHarvestable) {
+	if (bIsHarvestable && Harvestables.Num() == 0) {
 		
 		for (auto Socket : Sockets) {
 			if (!Socket.ToString().Contains("Fruit")) continue;
@@ -273,7 +272,7 @@ void APlantActor::SetIsHarvestable(bool newBool)
 			harvestable->AttachToComponent(PlantMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		}
 	}
-	else {
+	else if (!bIsHarvestable){
 		for (auto Harvest : Harvestables) {
 			Harvest->RemoveFromRoot();
 			Harvest->Destroy();
