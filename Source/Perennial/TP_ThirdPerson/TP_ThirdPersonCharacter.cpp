@@ -76,7 +76,6 @@ void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Harvest", IE_Pressed, this, &ATP_ThirdPersonCharacter::Harvest);
 	PlayerInputComponent->BindAction("Water", IE_Pressed, this, &ATP_ThirdPersonCharacter::Water);
 	PlayerInputComponent->BindAction("Fertilize", IE_Pressed, this, &ATP_ThirdPersonCharacter::Fertilize);
-	PlayerInputComponent->BindAction("Plant", IE_Pressed, this, &ATP_ThirdPersonCharacter::Plant);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -250,8 +249,18 @@ void ATP_ThirdPersonCharacter::Fertilize()
 	}
 }
 
-void ATP_ThirdPersonCharacter::Plant()
+void ATP_ThirdPersonCharacter::Plant(UInventoryItem* Item)
 {
+	if (!Item->isSeed)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Not a seed!"));
+		}
+
+		return;
+	}
+
 	if (CurrentPlant)
 	{
 		// Check if the dirt mound already has a plant
@@ -263,7 +272,7 @@ void ATP_ThirdPersonCharacter::Plant()
 			}
 
 			// Pass to Character Actor
-			MyActor->PlantSeed();
+			MyActor->PlantSeed(CurrentPlant, Item);
 		}
 		else
 		{

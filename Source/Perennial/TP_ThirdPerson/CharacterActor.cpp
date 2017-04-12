@@ -88,21 +88,20 @@ bool ACharacterActor::DeleteFertilizer()
 	}
 }
 
-bool ACharacterActor::PlantSeed()
+void ACharacterActor::PlantSeed(APlantActor* CurrentPlant, UInventoryItem* Seed)
 {
-	// Open inventory
-	// Player clicks on seeds they want to plant
-	// Grab pointer of seeds they clicked on, pass to Plant method
-	// Plant->Plant(Inventory item seed);
+	// Plant the seed
+	CurrentPlant->Plant(Seed);
 
 	// Delete seeds from player inventory
-	return true;
+	PlayerInventory->removeItemToInventory(Seed);
 }
 
 void ACharacterActor::Harvest(APlantActor* CurrentPlant)
 {
 	TArray<UInventoryItem *> ItemsForInventory = CurrentPlant->Harvest();
 
+	// Add all items in array to player's inventory
 	for (auto& Item : ItemsForInventory) 
 	{
 		PlayerInventory->addItemToInventory(Item);
