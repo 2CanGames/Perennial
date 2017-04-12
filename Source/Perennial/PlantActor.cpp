@@ -146,16 +146,16 @@ void APlantActor::InitPlant(FString name)
 	Plants the plant.
 	Sets this PlantActor to the appropriate type of plant
 */
-void APlantActor::Plant(UInventoryItem * item)
+void APlantActor::Plant(AInventoryItem * item)
 {
 	//Do not do anything if my state is anything but NO_PLANT
 	if (_CurrentStage != EPlantStage::NO_PLANT) return;
 	if (!item) {
-		item = CreateDefaultSubobject<UInventoryItem>("item");
+		item = CreateDefaultSubobject<AInventoryItem>("item");
 		
 	}
 	//Init plant based on type of item
-	Quality = item->getQuality();
+	//Quality = item->getQuality();
 	InitPlant(item->getPlantName());
 }
 
@@ -316,12 +316,13 @@ EPlantStage APlantActor::GetStage() const
 	return _CurrentStage;
 }
 
-TArray<UInventoryItem *> APlantActor::Harvest()
+TArray<AInventoryItem *> APlantActor::Harvest()
 {	
-	TArray<UInventoryItem *> HarvestResult;
+	TArray<AInventoryItem *> HarvestResult;
 	//Get some fruit and seeds
 	for (int i = 0; i < 3; i++) {
-		UInventoryItem* harvest = ConstructObject<UInventoryItem>(UInventoryItem::StaticClass(), (UObject*)GetTransientPackage(), *PlantName);
+		AInventoryItem* harvest = GetWorld()->SpawnActor<AInventoryItem>(AInventoryItem::StaticClass());//NewObject<AInventoryItem>(AInventoryItem::StaticClass(), (AActor*)GetTransientPackage(), *PlantName);
+		harvest->setPlantName(*PlantName);
 		if (harvest != NULL)
 		{
 			HarvestResult.Add(harvest);

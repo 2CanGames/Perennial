@@ -249,9 +249,9 @@ void ATP_ThirdPersonCharacter::Fertilize()
 	}
 }
 
-void ATP_ThirdPersonCharacter::Plant(UInventoryItem* Item)
+void ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 {
-	if (!Item->isSeed)
+	if (!Item->getIsSeed())
 	{
 		if (GEngine)
 		{

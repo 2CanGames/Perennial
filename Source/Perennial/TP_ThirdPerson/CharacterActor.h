@@ -47,7 +47,7 @@ public:
 
 	bool DeleteFertilizer();
 
-	void PlantSeed(APlantActor* CurrentPlant, UInventoryItem* Seed);
+	void PlantSeed(APlantActor* CurrentPlant, AInventoryItem* Seed);
 
 	void Harvest(APlantActor* CurrentPlant);
 

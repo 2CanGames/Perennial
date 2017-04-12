@@ -70,7 +70,7 @@ protected:
 
 	/** Action not mapped to buttons */
 	UFUNCTION(BlueprintCallable)
-	void Plant(UInventoryItem* Item);
+	void Plant(AInventoryItem* Item);
 
 	ACharacterActor* MyActor;
 
