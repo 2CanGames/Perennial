@@ -215,6 +215,12 @@ void APlantActor::Die()
 	SetIsHarvestable(false);
 	Quality = 0;
 	DaysAlive = 0;
+	if (Harvestables.Num() != 0) {
+		for (auto Harvest : Harvestables) {
+			Harvest->RemoveFromRoot();
+			Harvest->Destroy();
+		}
+	}
 }
 
 /*
