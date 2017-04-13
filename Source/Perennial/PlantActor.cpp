@@ -43,7 +43,7 @@ APlantActor::APlantActor()
 void APlantActor::BeginPlay()
 {
 	Super::BeginPlay();
-	SetStage(EPlantStage::NO_PLANT);
+	
 	SetIsWatered(false);
 	SetIsFertilized(false);
 }
@@ -186,7 +186,7 @@ void APlantActor::Grow()
 	switch (_CurrentStage) {
 	case EPlantStage::NO_PLANT:
 		//TODO: Get rid of initplant. 
-		InitPlant(PlantName);
+		//InitPlant(PlantName);
 		return;
 	case EPlantStage::SEED:
 		SetStage(EPlantStage::BUDDING);
@@ -255,7 +255,7 @@ void APlantActor::SetIsHarvestable(bool newBool)
 {
 	bIsHarvestable = newBool;
 	TArray<FName> Sockets = PlantMesh->GetAllSocketNames();
-	if (bIsHarvestable) {
+	if (bIsHarvestable && Harvestables.Num() == 0) {
 		
 		for (auto Socket : Sockets) {
 			if (!Socket.ToString().Contains("Fruit")) continue;
@@ -266,11 +266,12 @@ void APlantActor::SetIsHarvestable(bool newBool)
 			harvestable->AttachToComponent(PlantMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		}
 	}
-	else {
+	else if (!bIsHarvestable){
 		for (auto Harvest : Harvestables) {
 			Harvest->RemoveFromRoot();
 			Harvest->Destroy();
 		}
+		Harvestables.Empty();
 	}
 	
 }
@@ -318,12 +319,7 @@ EPlantStage APlantActor::GetStage() const
 
 TArray<AInventoryItem *> APlantActor::Harvest()
 {	
-<<<<<<< HEAD
-	TArray<UInventoryItem *> HarvestResult;
-	if (!bIsHarvestable) return HarvestResult;
-=======
 	TArray<AInventoryItem *> HarvestResult;
->>>>>>> 9927c2264ba09c9bad73ca69898934e1cc765428
 	//Get some fruit and seeds
 	for (int i = 0; i < 3; i++) {
 		AInventoryItem* harvest = GetWorld()->SpawnActor<AInventoryItem>(AInventoryItem::StaticClass());//NewObject<AInventoryItem>(AInventoryItem::StaticClass(), (AActor*)GetTransientPackage(), *PlantName);
@@ -336,7 +332,13 @@ TArray<AInventoryItem *> APlantActor::Harvest()
 		{
 			// Failed to create object
 		}
-		
+	}
+
+	for (int j = 0; j < 2; j++) {
+		AInventoryItem* harvest = GetWorld()->SpawnActor<AInventoryItem>(AInventoryItem::StaticClass());
+		harvest->setPlantName(*PlantName);
+		harvest->setIsSeed(true);
+		HarvestResult.Add(harvest);
 	}
 
 	//Delete this object
