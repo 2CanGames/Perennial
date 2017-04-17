@@ -43,7 +43,7 @@ APlantActor::APlantActor()
 void APlantActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	SetIsWatered(false);
 	SetIsFertilized(false);
 }
@@ -103,6 +103,15 @@ void APlantActor::Tick(float DeltaTime)
 
 void APlantActor::InitPlant(FString name)
 {
+	if (!PlantDictionary) {
+		for (TActorIterator<APlantDictionary> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		{
+			APlantDictionary *pd = *ActorItr;
+			PlantDictionary = pd;
+			break;
+		}
+	}
+
 	if (_CurrentStage != EPlantStage::NO_PLANT) return;
 
 	if (name.IsEmpty())
@@ -340,12 +349,10 @@ TArray<AInventoryItem *> APlantActor::Harvest()
 		}
 	}
 
-	for (int j = 0; j < 2; j++) {
-		AInventoryItem* harvest = GetWorld()->SpawnActor<AInventoryItem>(AInventoryItem::StaticClass());
-		harvest->setPlantName(*PlantName);
-		harvest->setIsSeed(true);
-		HarvestResult.Add(harvest);
-	}
+	AInventoryItem* RandomHarvest = GetWorld()->SpawnActor<AInventoryItem>(AInventoryItem::StaticClass());
+	RandomHarvest->setPlantName(PlantDictionary->GetRandomPlantOfType(_Type));
+	RandomHarvest->setIsSeed(true);
+	HarvestResult.Add(RandomHarvest);
 
 	//Delete this object
 	if (GEngine) {
