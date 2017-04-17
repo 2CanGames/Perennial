@@ -27,6 +27,7 @@ void ACharacterActor::BeginPlay()
 	_CurrentStage = YOUNG;
 	DaysAlive = 0;
 	NumFertilizers = 3;
+	TotalQualityPoints = 0;
 
 	AInventoryItem* Seed1 = GetWorld()->SpawnActor<AInventoryItem>();
 	AInventoryItem* Seed2 = GetWorld()->SpawnActor<AInventoryItem>();
@@ -109,5 +110,12 @@ void ACharacterActor::Harvest(APlantActor* CurrentPlant)
 	for (auto& Item : ItemsForInventory) 
 	{
 		PlayerInventory->addItemToInventory(Item);
+	}
+
+	TotalQualityPoints = PlayerInventory->getTotalQualityPoints();
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Total Quality Points: ") + FString::FromInt(TotalQualityPoints));
 	}
 }
