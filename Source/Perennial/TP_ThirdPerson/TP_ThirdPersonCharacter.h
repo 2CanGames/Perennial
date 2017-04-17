@@ -84,7 +84,11 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+<<<<<<< HEAD
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current Plant")
+=======
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+>>>>>>> kelly-branch
 	APlantActor* CurrentPlant;
 
 	virtual void BeginPlay() override;

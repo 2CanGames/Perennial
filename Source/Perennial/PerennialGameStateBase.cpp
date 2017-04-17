@@ -73,6 +73,10 @@ int APerennialGameStateBase::getCurrentAmountOfYears() {
 	return currentAmountOfYears;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> kelly-branch
 Season APerennialGameStateBase::getCurrentSeason() {
 	return currentSeason;
 }
