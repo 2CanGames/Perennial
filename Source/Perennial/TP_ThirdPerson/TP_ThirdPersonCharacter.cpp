@@ -14,6 +14,7 @@ ATP_ThirdPersonCharacter::ATP_ThirdPersonCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	
 
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
@@ -41,11 +42,15 @@ ATP_ThirdPersonCharacter::ATP_ThirdPersonCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	BoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
+	BoxCollider->SetupAttachment(RootComponent);
+	BoxCollider->InitBoxExtent(BoxColliderSize);
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ATP_ThirdPersonCharacter::OnBeginOverlap);
-	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ATP_ThirdPersonCharacter::OnEndOverlap);
+	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &ATP_ThirdPersonCharacter::OnBeginOverlap);
+	BoxCollider->OnComponentEndOverlap.AddDynamic(this, &ATP_ThirdPersonCharacter::OnEndOverlap);
 }
 
 void ATP_ThirdPersonCharacter::BeginPlay()
