@@ -85,6 +85,7 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlantActor* CurrentPlant;
 
 	virtual void BeginPlay() override;

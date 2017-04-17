@@ -7,6 +7,15 @@
 // Sets default values
 AInventoryItem::AInventoryItem()
 {
+	if (!PlantLookupTable) 
+	{
+		static ConstructorHelpers::FObjectFinder<UDataTable> PlantLookupDataTable_BP(TEXT("DataTable'/Game/Data/PlantData.PlantData'"));
+
+		if (PlantLookupDataTable_BP.Object) 
+		{
+			PlantLookupTable = PlantLookupDataTable_BP.Object;
+		}
+	}
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	plantName = "DEFAULT_PLANT_NAME";
@@ -35,13 +44,7 @@ void AInventoryItem::setPlantName(FString PlantName)
 int AInventoryItem::getQuality() {
 	static const FString ContextString(TEXT("GENERAL"));
 
-	/*if (!PlantLookupTable) {
-		static ConstructorHelpers::FObjectFinder<UDataTable> PlantLookupDataTable_BP(TEXT("DataTable'/Game/Data/PlantData.PlantData'"));
-
-		if (PlantLookupDataTable_BP.Object) {
-			PlantLookupTable = PlantLookupDataTable_BP.Object;
-		}
-	}*/
+	
 
 	FPlantLookupTable* PLookupRow = PlantLookupTable->FindRow<FPlantLookupTable>(
 		*plantName,

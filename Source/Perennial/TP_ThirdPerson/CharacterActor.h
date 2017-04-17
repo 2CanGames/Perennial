@@ -59,5 +59,7 @@ public:
 	int NumFertilizers;
 
 	int DaysAlive;
+
+	int TotalQualityPoints;
 	
 };
