@@ -10,6 +10,9 @@ class ATP_ThirdPersonCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere)
+	class UBoxComponent* BoxCollider;
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -19,6 +22,9 @@ class ATP_ThirdPersonCharacter : public ACharacter
 	class UCameraComponent* FollowCamera;
 public:
 	ATP_ThirdPersonCharacter();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector BoxColliderSize;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)

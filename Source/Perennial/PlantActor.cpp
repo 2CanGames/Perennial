@@ -277,6 +277,7 @@ void APlantActor::SetIsHarvestable(bool newBool)
 			Harvest->RemoveFromRoot();
 			Harvest->Destroy();
 		}
+		Harvestables.Empty();
 	}
 	
 }
