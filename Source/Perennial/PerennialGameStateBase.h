@@ -52,4 +52,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int getCurrentAmountOfYears();
+
+	UFUNCTION(BlueprintCallable)
+	Season getCurrentSeason();
 };

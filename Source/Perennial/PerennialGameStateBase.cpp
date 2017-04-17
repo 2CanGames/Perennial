@@ -72,3 +72,7 @@ int APerennialGameStateBase::getCurrentAmountOfDays() {
 int APerennialGameStateBase::getCurrentAmountOfYears() {
 	return currentAmountOfYears;
 }
+
+Season APerennialGameStateBase::getCurrentSeason() {
+	return currentSeason;
+}
