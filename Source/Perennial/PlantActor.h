@@ -7,23 +7,8 @@
 #include "InventoryItem.h"
 #include "Harvestable.h"
 #include "EventListener.h"
+#include "PlantDictionary.h"
 #include "PlantActor.generated.h"
-
-UENUM(BlueprintType)
-enum EPlantType {
-	TREE,
-	ROOT,
-	VINE,
-	BUSH
-};
-
-UENUM(BlueprintType)
-enum EPlantStage {
-	NO_PLANT,
-	SEED,
-	BUDDING,
-	GROWN
-};
 
 class PlantEventListener;
 
@@ -37,6 +22,9 @@ public:
 	APlantActor();
 
 private:
+
+	//Had reference to plant types
+	APlantDictionary* PlantDictionary;
 
 	//Data lookup table for plant information
 	UDataTable* PlantLookupTable;
