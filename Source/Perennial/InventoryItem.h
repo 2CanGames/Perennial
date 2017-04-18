@@ -21,6 +21,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Is Seed")
 	bool isSeed;
 
+	UFUNCTION(BlueprintCallable)
 	int getQuality();
 
 	FString getPlantName();

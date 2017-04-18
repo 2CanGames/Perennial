@@ -56,10 +56,12 @@ public:
 
 	ECharacterStage _CurrentStage;
 
-	int NumFertilizers;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Inventory")
+		int NumFertilizers;
 
 	int DaysAlive;
 
-	int TotalQualityPoints;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Inventory")
+		int TotalQualityPoints;
 	
 };

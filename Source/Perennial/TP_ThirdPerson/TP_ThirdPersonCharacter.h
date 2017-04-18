@@ -74,6 +74,7 @@ protected:
 	void Water();
 	void Fertilize();
 
+	/** Action not mapped to buttons */
 	UFUNCTION(BlueprintCallable)
 	bool Plant(AInventoryItem* Item);
 
@@ -84,7 +85,7 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Current Plant")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlantActor* CurrentPlant;
 
 	virtual void BeginPlay() override;
