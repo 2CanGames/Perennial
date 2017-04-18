@@ -2,6 +2,7 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "PlantActor.h"
+#include "ComposterActor.h"
 #include "CharacterActor.h"
 #include "TP_ThirdPersonCharacter.generated.h"
 
@@ -74,11 +75,22 @@ protected:
 	void Water();
 	void Fertilize();
 
-	/** Action not mapped to buttons */
 	UFUNCTION(BlueprintCallable)
 	bool Plant(AInventoryItem* Item);
 
+	UFUNCTION(BlueprintCallable)
+	void AddToCompostList(AInventoryItem* Item);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveFromCompostList(AInventoryItem* Item);
+
+	UFUNCTION(BlueprintCallable)
+	void ClearCompostList();
+
 	ACharacterActor* MyActor;
+
+	UFUNCTION(BlueprintCallable)
+	void AddFertilizer();
 
 protected:
 	// APawn interface
@@ -87,6 +99,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlantActor* CurrentPlant;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AComposterActor* Composter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AInventoryItem*> CompostList;
 
 	virtual void BeginPlay() override;
 

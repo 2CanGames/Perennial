@@ -5,6 +5,7 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TP_ThirdPersonCharacter.h"
 #include "PlantActor.h"
+#include "ComposterActor.h"
 #include "CharacterActor.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -105,13 +106,27 @@ void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, *HitComp->GetName());
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, *Other->GetName());
 	}
-	CurrentPlant = (APlantActor*)Other;
+
+	if (Other->IsA(APlantActor::StaticClass()))
+	{
+		CurrentPlant = (APlantActor*)Other;
+	}
+	else if (Other->IsA(AComposterActor::StaticClass()))
+	{
+		Composter = (AComposterActor*)Other;
+	}
 }
 
 void ATP_ThirdPersonCharacter::OnEndOverlap(class UPrimitiveComponent* HitComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if((APlantActor*)Other == CurrentPlant)
+	if ((APlantActor*)Other == CurrentPlant)
+	{
 		CurrentPlant = nullptr;
+	}
+	else if (Other->IsA(AComposterActor::StaticClass()))
+	{
+		Composter = nullptr;
+	}
 }
 
 void ATP_ThirdPersonCharacter::OnResetVR()
@@ -284,15 +299,54 @@ bool ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 			MyActor->PlantSeed(CurrentPlant, Item);
 			return true;
 		}
-		/*else
-		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already a plant there!"));
-			}
-			return false;
-		}*/
 	}
 
 	return false;
+}
+
+void ATP_ThirdPersonCharacter::AddToCompostList(AInventoryItem * Item)
+{
+	if (CompostList.Contains(Item))
+	{
+		RemoveFromCompostList(Item);
+	}
+	else
+	{
+		CompostList.Add(Item);
+		MyActor->PlayerInventory->removeItemToInventory(Item);
+	}
+}
+
+void ATP_ThirdPersonCharacter::RemoveFromCompostList(AInventoryItem * Item)
+{
+	int count = 0;
+	for (auto& CurrentItem : CompostList)
+	{
+		if (CurrentItem == Item)
+		{
+			CompostList.RemoveAt(count);
+			return;
+		}
+		count++;
+	}
+
+	MyActor->PlayerInventory->addItemToInventory(Item);
+}
+
+void ATP_ThirdPersonCharacter::ClearCompostList()
+{
+	if (CompostList.Num() != 0)
+	{
+		CompostList.Empty();
+	}
+}
+
+void ATP_ThirdPersonCharacter::AddFertilizer()
+{
+	MyActor->NumFertilizers++;
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilizers: ") + FString::FromInt(MyActor->NumFertilizers));
+	}
 }
