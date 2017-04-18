@@ -6,6 +6,7 @@
 #include "TP_ThirdPersonCharacter.h"
 #include "PlantActor.h"
 #include "ComposterActor.h"
+#include "PlotBuyingActor.h"
 #include "CharacterActor.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -102,7 +103,8 @@ void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (GEngine) {
+	if (GEngine) 
+	{
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, *HitComp->GetName());
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, *Other->GetName());
 	}
@@ -115,6 +117,10 @@ void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp
 	{
 		Composter = (AComposterActor*)Other;
 	}
+	else if (Other->IsA(APlotBuyingActor::StaticClass()))
+	{
+		PlotBuyer = (APlotBuyingActor*)Other;
+	}
 }
 
 void ATP_ThirdPersonCharacter::OnEndOverlap(class UPrimitiveComponent* HitComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -126,6 +132,10 @@ void ATP_ThirdPersonCharacter::OnEndOverlap(class UPrimitiveComponent* HitComp, 
 	else if (Other->IsA(AComposterActor::StaticClass()))
 	{
 		Composter = nullptr;
+	}
+	else if (Other->IsA(APlotBuyingActor::StaticClass()))
+	{
+		PlotBuyer = nullptr;
 	}
 }
 
@@ -314,6 +324,11 @@ void ATP_ThirdPersonCharacter::AddToCompostList(AInventoryItem * Item)
 	{
 		CompostList.Add(Item);
 		MyActor->PlayerInventory->removeItemToInventory(Item);
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item removed from inventory"));
+		}
 	}
 }
 
@@ -331,14 +346,89 @@ void ATP_ThirdPersonCharacter::RemoveFromCompostList(AInventoryItem * Item)
 	}
 
 	MyActor->PlayerInventory->addItemToInventory(Item);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item added to inventory"));
+	}
 }
 
 void ATP_ThirdPersonCharacter::ClearCompostList()
 {
 	if (CompostList.Num() != 0)
 	{
-		CompostList.Empty();
+		for (auto& CurrentItem : CompostList)
+		{
+			RemoveFromCompostList(CurrentItem);
+		}
 	}
+}
+
+void ATP_ThirdPersonCharacter::AddToPlotBuyingList(AInventoryItem * Item)
+{
+	if (PlotBuyingList.Contains(Item))
+	{
+		RemoveFromPlotBuyingList(Item);
+	}
+	else
+	{
+		PlotBuyingList.Add(Item);
+		MyActor->PlayerInventory->removeItemToInventory(Item);
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item removed from inventory"));
+		}
+	}
+}
+
+void ATP_ThirdPersonCharacter::RemoveFromPlotBuyingList(AInventoryItem * Item)
+{
+	int count = 0;
+	for (auto& CurrentItem : PlotBuyingList)
+	{
+		if (CurrentItem == Item)
+		{
+			PlotBuyingList.RemoveAt(count);
+			return;
+		}
+		count++;
+	}
+
+	MyActor->PlayerInventory->addItemToInventory(Item);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item added to inventory"));
+	}
+}
+
+void ATP_ThirdPersonCharacter::ClearPlotBuyingList()
+{
+	if (PlotBuyingList.Num() != 0)
+	{
+		for (auto& CurrentItem : PlotBuyingList)
+		{
+			RemoveFromPlotBuyingList(CurrentItem);
+		}
+	}
+}
+
+int ATP_ThirdPersonCharacter::GetTotalPlotBuyingPoints()
+{
+	int TotalPoints = 0;
+
+	for (auto& CurrentItem : PlotBuyingList)
+	{
+		TotalPoints += CurrentItem->getQuality();
+	}
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Plot Buying Points so far: ") + FString::FromInt(TotalPoints));
+	}
+
+	return TotalPoints;
 }
 
 void ATP_ThirdPersonCharacter::AddFertilizer()
