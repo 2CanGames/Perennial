@@ -65,7 +65,8 @@ void APlantActor::processEvent()
 
 void APlantActor::DayEnded()
 {
-	//if (_CurrentStage == EPlantStage::NO_PLANT) return;
+	if (_CurrentStage == EPlantStage::NO_PLANT) return;
+
 	//Make checks on bool flags
 	
 	//If I haven't been watered today, update TimeSinceLastWatering
@@ -85,7 +86,20 @@ void APlantActor::DayEnded()
 	//Determine if we need to grow based on how many days we have been alive
 	//if yes, call grow
 	if (DaysAlive >= DaysToGrow) {
-		int GrowIterations = DaysAlive / DaysToGrow;
+		//Make sure we're not dividing by zero
+		if (DaysToGrow == 0) 
+			DaysToGrow = 1;
+
+		//Modified Days To Grow
+		int ModDaysToGrow = DaysToGrow;
+		
+		//If this is already a grown plant, stall out some days before next harvest.
+		if (_CurrentStage == EPlantStage::GROWN) 
+			ModDaysToGrow+=(FMath::Round(DaysToGrow / 2));
+
+		//Check how many growth iterations we're gonna be doing
+		int GrowIterations = FMath::Floor(DaysAlive / ModDaysToGrow);
+
 		//If fertilizer makes plant grow 2 stages in one day, then grow x amt of iterations
 		for (int i = 0; i < GrowIterations; i++)
 			Grow();
@@ -93,7 +107,6 @@ void APlantActor::DayEnded()
 
 	//Revert isWatered state
 	//Revert isFertilized state
-
 	SetIsWatered(false);
 	SetIsFertilized(false);
 }
@@ -144,7 +157,7 @@ void APlantActor::InitPlant(FString name)
 	//Dynamically load in harvest mesh
 	HarvestMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), NULL, *PLookupRow->Plant_Model));
 	Quality = PLookupRow->Quality;
-	//DaysToGrow = PLookupRow->Days_To_Next_Stage;
+	DaysToGrow = PLookupRow->Days_To_Next_Stage;
 	SetType(PLookupRow->Plant_Type);
 	PlantName = name.ToLower();
 	//Set default parameters
@@ -168,7 +181,6 @@ void APlantActor::Plant(AInventoryItem * item)
 		
 	}
 	//Init plant based on type of item
-	//Quality = item->getQuality();
 	InitPlant(item->getPlantName());
 }
 
