@@ -101,6 +101,10 @@ void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, *HitComp->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, *Other->GetName());
+	}
 	CurrentPlant = (APlantActor*)Other;
 }
 

@@ -51,7 +51,7 @@ private:
 
 protected:
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
 		class USkeletalMeshComponent* PlantMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
@@ -60,10 +60,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant")
 		int FertilizerSpeed = 2;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Status")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Status")
 		class UMaterialBillboardComponent* WaterIcon;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Status")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Status")
 		class UParticleSystemComponent* FertilizerEffect;
 
 	USkeletalMesh* HarvestMesh;
@@ -96,10 +96,10 @@ public:
 
 	/* Blueprint Accessible Functions */
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Data")
 		TMap<TEnumAsByte<EPlantType>, USkeletalMesh*> GrownMeshMap;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Data")
 		TMap<TEnumAsByte<EPlantStage>, USkeletalMesh*> MeshMap;
 
 	UFUNCTION(BlueprintCallable)

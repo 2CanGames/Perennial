@@ -44,6 +44,10 @@ void APlantActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	WaterIcon->AttachToComponent(PlantMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false));
+	WaterIcon->SetRelativeLocation(FVector(0, 0, 90.0f));
+	FertilizerEffect->AttachToComponent(PlantMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
+
 	SetIsWatered(false);
 	SetIsFertilized(false);
 }
