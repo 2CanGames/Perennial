@@ -216,6 +216,8 @@ void ATP_ThirdPersonCharacter::Harvest()
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Not harvestable!"));
 			}
+
+			GEngine->GetFirstLocalPlayerController(GetWorld())->PlayDynamicForceFeedback(0.5f, 0.25f, true, true, true, true, EDynamicForceFeedbackAction::Start, FLatentActionInfo());
 		}
 	}
 }
