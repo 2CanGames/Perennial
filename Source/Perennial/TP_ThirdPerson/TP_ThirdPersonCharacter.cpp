@@ -284,14 +284,14 @@ bool ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 			MyActor->PlantSeed(CurrentPlant, Item);
 			return true;
 		}
-		else
+		/*else
 		{
 			if (GEngine)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already a plant there!"));
 			}
 			return false;
-		}
+		}*/
 	}
 
 	return false;
