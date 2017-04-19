@@ -12,6 +12,13 @@
 
 class PlantEventListener;
 
+enum Buttons {
+	X = 0,
+	Y,
+	A,
+	B
+};
+
 UCLASS()
 class PERENNIAL_API APlantActor : public AEventListener
 {
@@ -64,6 +71,12 @@ protected:
 		class UMaterialBillboardComponent* WaterIcon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Status")
+		class UMaterialBillboardComponent* ButtonPrompt;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Status")
+		class UTextRenderComponent* TextPrompt;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Status")
 		class UParticleSystemComponent* FertilizerEffect;
 
 	USkeletalMesh* HarvestMesh;
@@ -95,6 +108,9 @@ public:
 	void processEvent();
 
 	/* Blueprint Accessible Functions */
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant")
+		TArray<UMaterial*> ButtonMap;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Data")
 		TMap<TEnumAsByte<EPlantType>, USkeletalMesh*> GrownMeshMap;

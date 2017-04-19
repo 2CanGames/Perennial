@@ -26,9 +26,16 @@ APlantActor::APlantActor()
 
 	PlantMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PlantMesh"));
 	WaterIcon = CreateDefaultSubobject<UMaterialBillboardComponent>(TEXT("WaterIcon"));
+	ButtonPrompt = CreateDefaultSubobject<UMaterialBillboardComponent>(TEXT("ButtonPrompt"));
+	TextPrompt = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextPrompt"));
 	FertilizerEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FertilizerEffect"));
 
 	RootComponent = PlantMesh;
+
+	ButtonPrompt->AttachToComponent(PlantMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
+	ButtonPrompt->SetRelativeLocation(FVector(0, 0, 180.0f));
+	TextPrompt->AttachToComponent(ButtonPrompt, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
+	TextPrompt->SetRelativeLocation(FVector(0, 0, 50.0f));
 
 	bIsHarvestable = false;
 	Quality = 0;
@@ -296,6 +303,8 @@ void APlantActor::SetIsHarvestable(bool newBool)
 			harvestable->SetHarvestableMesh(HarvestMesh);
 			harvestable->AttachToComponent(PlantMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		}
+		ButtonPrompt->SetMaterial(0, ButtonMap[1]);
+		TextPrompt->SetText(TEXT("Harvest"));
 	}
 	else if (!bIsHarvestable){
 		for (auto Harvest : Harvestables) {
@@ -303,6 +312,7 @@ void APlantActor::SetIsHarvestable(bool newBool)
 			Harvest->Destroy();
 		}
 		Harvestables.Empty();
+
 	}
 	
 }
@@ -334,6 +344,19 @@ EPlantType APlantActor::GetType() const
 void APlantActor::SetStage(EPlantStage newStage)
 {
 	_CurrentStage = newStage;
+	switch (_CurrentStage) {
+		case EPlantStage::NO_PLANT:
+			ButtonPrompt->SetMaterial(0, ButtonMap[0]);
+			TextPrompt->SetText(TEXT("Plant"));
+			break;
+		case EPlantStage::GROWN:
+			
+			break;
+		default:
+			ButtonPrompt->SetMaterial(0, ButtonMap[3]);
+			TextPrompt->SetText(TEXT("Water"));
+			break;
+	}
 	//We want to get the reference to its grown mesh
 	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
 	if (newMesh) {
