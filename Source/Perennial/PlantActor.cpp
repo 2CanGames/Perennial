@@ -283,9 +283,27 @@ void APlantActor::SetIsWatered(bool newBool)
 	//If this plant is watered or is not planted, then don't show the icon
 	if (bIsWatered || (_CurrentStage == EPlantStage::NO_PLANT)) {
 		WaterIcon->SetVisibility(false);
+		if (_CurrentStage == EPlantStage::NO_PLANT) {
+			ButtonPrompt->SetMaterial(0, ButtonMap[0]);
+			TextPrompt->SetText(TEXT("Harvest"));
+		}
+		else if (!bIsHarvestable && _CurrentStage == EPlantStage::GROWN) {
+			ButtonPrompt->SetMaterial(0, ButtonMap[1]);
+			TextPrompt->SetText(TEXT("Harvest"));
+		}
+		else if (!bIsFertilized) {
+			ButtonPrompt->SetMaterial(0, ButtonMap[2]);
+			TextPrompt->SetText(TEXT("Fertilize"));
+		}
+		else {
+			ButtonPrompt->SetMaterial(0, NULL);
+			TextPrompt->SetText(TEXT(""));
+		}
 	}
 	else {
 		WaterIcon->SetVisibility(true);
+		ButtonPrompt->SetMaterial(0, ButtonMap[3]);
+		TextPrompt->SetText(TEXT("Water"));
 	}
 }
 
