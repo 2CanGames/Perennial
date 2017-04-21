@@ -251,8 +251,6 @@ void ATP_ThirdPersonCharacter::Fertilize()
 {
 	if (CurrentPlant)
 	{
-		// Check if player has fertilizer
-
 		// Check if plant is already fertilized
 		if (!(CurrentPlant->bIsFertilized))
 		{
@@ -316,6 +314,8 @@ bool ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 	return false;
 }
 
+// Adds item to compost list
+// Does NOT remove from inventory yet
 void ATP_ThirdPersonCharacter::AddToCompostList(AInventoryItem * Item)
 {
 	if (CompostList.Contains(Item))
@@ -325,15 +325,16 @@ void ATP_ThirdPersonCharacter::AddToCompostList(AInventoryItem * Item)
 	else
 	{
 		CompostList.Add(Item);
-		MyActor->PlayerInventory->removeItemToInventory(Item);
+	}
 
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item removed from inventory"));
-		}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("ADD - # Items in CompostList: ") + FString::FromInt(CompostList.Num()));
 	}
 }
 
+// For 'unclicking' an item when composting
+// Only removes from compost list
 void ATP_ThirdPersonCharacter::RemoveFromCompostList(AInventoryItem * Item)
 {
 	int count = 0;
@@ -346,24 +347,40 @@ void ATP_ThirdPersonCharacter::RemoveFromCompostList(AInventoryItem * Item)
 		}
 		count++;
 	}
+}
 
-	MyActor->PlayerInventory->addItemToInventory(Item);
+// When player has confirmed a compost
+// Removes items from compost list AND removes all items from inventory
+void ATP_ThirdPersonCharacter::ClearCompostList()
+{
+	for (auto& CurrentItem : CompostList)
+	{
+		MyActor->PlayerInventory->removeItemToInventory(CurrentItem);
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("Item removed from inventory"));
+		}
+	}
+
+	CompostList.Empty();
 
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item added to inventory"));
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("CLEAR - # Items in CompostList: ") + FString::FromInt(CompostList.Num()));
 	}
 }
 
-void ATP_ThirdPersonCharacter::ClearCompostList()
+// Player cancelled in the middle of composting
+// Removes all items from compost list, does NOT remove from inventory
+void ATP_ThirdPersonCharacter::CancelCompost()
 {
-	if (CompostList.Num() != 0)
+	if (GEngine)
 	{
-		for (auto& CurrentItem : CompostList)
-		{
-			RemoveFromCompostList(CurrentItem);
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("CANCEL - # Items in CompostList: ") + FString::FromInt(CompostList.Num()));
 	}
+
+	CompostList.Empty();
 }
 
 void ATP_ThirdPersonCharacter::AddToPlotBuyingList(AInventoryItem * Item)
@@ -439,6 +456,6 @@ void ATP_ThirdPersonCharacter::AddFertilizer()
 
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilizers: ") + FString::FromInt(MyActor->NumFertilizers));
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, TEXT("Fertilizers: ") + FString::FromInt(MyActor->NumFertilizers));
 	}
 }

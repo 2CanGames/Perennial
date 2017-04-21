@@ -90,6 +90,9 @@ protected:
 	void ClearCompostList();
 
 	UFUNCTION(BlueprintCallable)
+	void CancelCompost();
+
+	UFUNCTION(BlueprintCallable)
 	void AddToPlotBuyingList(AInventoryItem* Item);
 
 	UFUNCTION(BlueprintCallable)
