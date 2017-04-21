@@ -69,7 +69,6 @@ void APlantActor::processEvent()
 	DayEnded();
 }
 
-
 void APlantActor::DayEnded()
 {
 	if (_CurrentStage == EPlantStage::NO_PLANT) return;
@@ -125,6 +124,30 @@ void APlantActor::Tick(float DeltaTime)
 
 }
 
+void APlantActor::UpdateButton()
+{
+	if (_CurrentStage == EPlantStage::NO_PLANT) {
+		ButtonPrompt->SetMaterial(0, ButtonMap[0]);
+		TextPrompt->SetText(TEXT("Plant"));
+	}
+	else if (bIsHarvestable && _CurrentStage == EPlantStage::GROWN) {
+		ButtonPrompt->SetMaterial(0, ButtonMap[1]);
+		TextPrompt->SetText(TEXT("Harvest"));
+	}
+	else if (!bIsWatered) {
+		ButtonPrompt->SetMaterial(0, ButtonMap[3]);
+		TextPrompt->SetText(TEXT("Water"));
+	}
+	else if (!bIsFertilized) {
+		ButtonPrompt->SetMaterial(0, ButtonMap[2]);
+		TextPrompt->SetText(TEXT("Fertilize"));
+	}
+	else {
+		ButtonPrompt->SetMaterial(0, NULL);
+		TextPrompt->SetText(TEXT(""));
+	}
+}
+
 void APlantActor::InitPlant(FString name)
 {
 	if (!PlantDictionary) {
@@ -172,6 +195,7 @@ void APlantActor::InitPlant(FString name)
 	SetIsWatered(false);
 	SetIsFertilized(false);
 	SetIsHarvestable(false);		
+	UpdateButton();
 	DaysAlive = 0;
 }
 
@@ -245,6 +269,7 @@ void APlantActor::Die()
 	SetIsWatered(false);
 	SetIsFertilized(false);
 	SetIsHarvestable(false);
+	UpdateButton();
 	Quality = 0;
 	DaysAlive = 0;
 	if (Harvestables.Num() != 0) {
@@ -283,28 +308,11 @@ void APlantActor::SetIsWatered(bool newBool)
 	//If this plant is watered or is not planted, then don't show the icon
 	if (bIsWatered || (_CurrentStage == EPlantStage::NO_PLANT)) {
 		WaterIcon->SetVisibility(false);
-		if (_CurrentStage == EPlantStage::NO_PLANT) {
-			ButtonPrompt->SetMaterial(0, ButtonMap[0]);
-			TextPrompt->SetText(TEXT("Harvest"));
-		}
-		else if (!bIsHarvestable && _CurrentStage == EPlantStage::GROWN) {
-			ButtonPrompt->SetMaterial(0, ButtonMap[1]);
-			TextPrompt->SetText(TEXT("Harvest"));
-		}
-		else if (!bIsFertilized) {
-			ButtonPrompt->SetMaterial(0, ButtonMap[2]);
-			TextPrompt->SetText(TEXT("Fertilize"));
-		}
-		else {
-			ButtonPrompt->SetMaterial(0, NULL);
-			TextPrompt->SetText(TEXT(""));
-		}
 	}
 	else {
 		WaterIcon->SetVisibility(true);
-		ButtonPrompt->SetMaterial(0, ButtonMap[3]);
-		TextPrompt->SetText(TEXT("Water"));
 	}
+	UpdateButton();
 }
 
 void APlantActor::SetIsHarvestable(bool newBool)
@@ -321,8 +329,6 @@ void APlantActor::SetIsHarvestable(bool newBool)
 			harvestable->SetHarvestableMesh(HarvestMesh);
 			harvestable->AttachToComponent(PlantMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket);
 		}
-		ButtonPrompt->SetMaterial(0, ButtonMap[1]);
-		TextPrompt->SetText(TEXT("Harvest"));
 	}
 	else if (!bIsHarvestable){
 		for (auto Harvest : Harvestables) {
@@ -332,7 +338,7 @@ void APlantActor::SetIsHarvestable(bool newBool)
 		Harvestables.Empty();
 
 	}
-	
+	UpdateButton();
 }
 
 void APlantActor::SetIsFertilized(bool newBool)
@@ -345,6 +351,7 @@ void APlantActor::SetIsFertilized(bool newBool)
 	else {
 		FertilizerEffect->DeactivateSystem();
 	}
+	UpdateButton();
 }
 
 /*
@@ -422,6 +429,6 @@ TArray<AInventoryItem *> APlantActor::Harvest()
 	}
 	
 	SetIsHarvestable(false);
-
+	UpdateButton();
 	return HarvestResult;
 }

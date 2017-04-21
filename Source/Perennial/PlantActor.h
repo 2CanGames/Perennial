@@ -47,6 +47,8 @@ private:
 
 	TArray<AHarvestable *> Harvestables;
 
+	void UpdateButton();
+
 	//Initialize the plant given a name
 	void InitPlant(FString name);
 
