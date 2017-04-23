@@ -92,8 +92,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Is Watered")
 	bool bIsWatered;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Is Fertilized")
 	bool bIsFertilized;
+
 	bool bIsHarvestable;
 
 	int Quality;

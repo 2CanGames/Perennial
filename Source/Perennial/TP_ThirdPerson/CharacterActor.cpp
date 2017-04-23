@@ -98,7 +98,7 @@ void ACharacterActor::PlantSeed(APlantActor* CurrentPlant, AInventoryItem* Seed)
 	// Plant the seed
 	CurrentPlant->Plant(Seed);
 
-	// Delete seeds from player inventory
+	// Delete seed from player inventory
 	PlayerInventory->removeItemToInventory(Seed);
 }
 

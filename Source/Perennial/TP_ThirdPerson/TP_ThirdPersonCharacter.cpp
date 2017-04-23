@@ -5,6 +5,8 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TP_ThirdPersonCharacter.h"
 #include "PlantActor.h"
+#include "ComposterActor.h"
+#include "PlotBuyingActor.h"
 #include "CharacterActor.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -104,17 +106,40 @@ void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (GEngine) {
+	if (GEngine) 
+	{
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, *HitComp->GetName());
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, *Other->GetName());
 	}
-	CurrentPlant = (APlantActor*)Other;
+
+	if (Other->IsA(APlantActor::StaticClass()))
+	{
+		CurrentPlant = (APlantActor*)Other;
+	}
+	else if (Other->IsA(AComposterActor::StaticClass()))
+	{
+		Composter = (AComposterActor*)Other;
+	}
+	else if (Other->IsA(APlotBuyingActor::StaticClass()))
+	{
+		PlotBuyer = (APlotBuyingActor*)Other;
+	}
 }
 
 void ATP_ThirdPersonCharacter::OnEndOverlap(class UPrimitiveComponent* HitComp, class AActor* Other, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if((APlantActor*)Other == CurrentPlant)
+	if ((APlantActor*)Other == CurrentPlant)
+	{
 		CurrentPlant = nullptr;
+	}
+	else if (Other->IsA(AComposterActor::StaticClass()))
+	{
+		Composter = nullptr;
+	}
+	else if (Other->IsA(APlotBuyingActor::StaticClass()))
+	{
+		PlotBuyer = nullptr;
+	}
 }
 
 void ATP_ThirdPersonCharacter::OnResetVR()
@@ -198,6 +223,8 @@ void ATP_ThirdPersonCharacter::Harvest()
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Not harvestable!"));
 			}
+
+			GEngine->GetFirstLocalPlayerController(GetWorld())->PlayDynamicForceFeedback(0.5f, 0.25f, true, true, true, true, EDynamicForceFeedbackAction::Start, FLatentActionInfo());
 		}
 	}
 }
@@ -235,8 +262,6 @@ void ATP_ThirdPersonCharacter::Fertilize()
 {
 	if (CurrentPlant)
 	{
-		// Check if player has fertilizer
-
 		// Check if plant is already fertilized
 		if (!(CurrentPlant->bIsFertilized))
 		{
@@ -303,16 +328,153 @@ bool ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 			MyActor->PlantSeed(CurrentPlant, Item);
 			return true;
 		}
-		/*else
-		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Already a plant there!"));
-			}
-			return false;
-		}*/
 	}
 
 	return false;
 }
 
+// Adds item to compost list
+// Does NOT remove from inventory yet
+void ATP_ThirdPersonCharacter::AddToCompostList(AInventoryItem * Item)
+{
+	if (CompostList.Contains(Item))
+	{
+		RemoveFromCompostList(Item);
+	}
+	else
+	{
+		CompostList.Add(Item);
+	}
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("ADD - # Items in CompostList: ") + FString::FromInt(CompostList.Num()));
+	}
+}
+
+// For 'unclicking' an item when composting
+// Only removes from compost list
+void ATP_ThirdPersonCharacter::RemoveFromCompostList(AInventoryItem * Item)
+{
+	int count = 0;
+	for (auto& CurrentItem : CompostList)
+	{
+		if (CurrentItem == Item)
+		{
+			CompostList.RemoveAt(count);
+			return;
+		}
+		count++;
+	}
+}
+
+// When player has confirmed a compost
+// Removes items from compost list AND removes all items from inventory
+void ATP_ThirdPersonCharacter::ClearCompostList()
+{
+	for (auto& CurrentItem : CompostList)
+	{
+		MyActor->PlayerInventory->removeItemToInventory(CurrentItem);
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("Item removed from inventory"));
+		}
+	}
+
+	CompostList.Empty();
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("CLEAR - # Items in CompostList: ") + FString::FromInt(CompostList.Num()));
+	}
+}
+
+// Player cancelled in the middle of composting
+// Removes all items from compost list, does NOT remove from inventory
+void ATP_ThirdPersonCharacter::CancelCompost()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("CANCEL - # Items in CompostList: ") + FString::FromInt(CompostList.Num()));
+	}
+
+	CompostList.Empty();
+}
+
+void ATP_ThirdPersonCharacter::AddToPlotBuyingList(AInventoryItem * Item)
+{
+	if (PlotBuyingList.Contains(Item))
+	{
+		RemoveFromPlotBuyingList(Item);
+	}
+	else
+	{
+		PlotBuyingList.Add(Item);
+		MyActor->PlayerInventory->removeItemToInventory(Item);
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item removed from inventory"));
+		}
+	}
+}
+
+void ATP_ThirdPersonCharacter::RemoveFromPlotBuyingList(AInventoryItem * Item)
+{
+	int count = 0;
+	for (auto& CurrentItem : PlotBuyingList)
+	{
+		if (CurrentItem == Item)
+		{
+			PlotBuyingList.RemoveAt(count);
+			return;
+		}
+		count++;
+	}
+
+	MyActor->PlayerInventory->addItemToInventory(Item);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item added to inventory"));
+	}
+}
+
+void ATP_ThirdPersonCharacter::ClearPlotBuyingList()
+{
+	if (PlotBuyingList.Num() != 0)
+	{
+		for (auto& CurrentItem : PlotBuyingList)
+		{
+			RemoveFromPlotBuyingList(CurrentItem);
+		}
+	}
+}
+
+int ATP_ThirdPersonCharacter::GetTotalPlotBuyingPoints()
+{
+	int TotalPoints = 0;
+
+	for (auto& CurrentItem : PlotBuyingList)
+	{
+		TotalPoints += CurrentItem->getQuality();
+	}
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Plot Buying Points so far: ") + FString::FromInt(TotalPoints));
+	}
+
+	return TotalPoints;
+}
+
+void ATP_ThirdPersonCharacter::AddFertilizer()
+{
+	MyActor->NumFertilizers++;
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, TEXT("Fertilizers: ") + FString::FromInt(MyActor->NumFertilizers));
+	}
+}
