@@ -24,6 +24,12 @@ public:
 	ATP_ThirdPersonCharacter();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TMap<FString, USoundCue*> ActionSounds;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAudioComponent* PlayerActionAudio;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector BoxColliderSize;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */

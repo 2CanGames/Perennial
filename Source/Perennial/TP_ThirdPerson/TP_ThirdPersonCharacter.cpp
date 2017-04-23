@@ -46,6 +46,9 @@ ATP_ThirdPersonCharacter::ATP_ThirdPersonCharacter()
 	BoxCollider->SetupAttachment(RootComponent);
 	BoxCollider->InitBoxExtent(BoxColliderSize);
 
+	PlayerActionAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("PlayerActionAudio"));
+	PlayerActionAudio->SetupAttachment(RootComponent);
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
@@ -181,7 +184,11 @@ void ATP_ThirdPersonCharacter::Harvest()
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Harvest!"));
 			}
-
+			USoundCue** sound = ActionSounds.Find("harvest");
+			if (sound) {
+				PlayerActionAudio->SetSound(*sound);
+				PlayerActionAudio->Play();
+			}
 			// Pass control to Character Actor
 			MyActor->Harvest(CurrentPlant);
 		}
@@ -206,7 +213,11 @@ void ATP_ThirdPersonCharacter::Water()
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Water!"));
 			}
-
+			USoundCue** sound = ActionSounds.Find("water");
+			if (sound) {
+				PlayerActionAudio->SetSound(*sound);
+				PlayerActionAudio->Play();
+			}
 			// Call plant's water method
 			CurrentPlant->Water();
 		}
@@ -243,7 +254,11 @@ void ATP_ThirdPersonCharacter::Fertilize()
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Fertilize!"));
 				}
-
+				USoundCue** sound = ActionSounds.Find("fertilize");
+				if (sound) {
+					PlayerActionAudio->SetSound(*sound);
+					PlayerActionAudio->Play();
+				}
 				// Call plant's fertilize method
 				CurrentPlant->Fertilize();
 			}
@@ -279,7 +294,11 @@ bool ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Plant!"));
 			}
-
+			USoundCue** sound = ActionSounds.Find("plant");
+			if (sound) {
+				PlayerActionAudio->SetSound(*sound);
+				PlayerActionAudio->Play();
+			}
 			// Pass to Character Actor
 			MyActor->PlantSeed(CurrentPlant, Item);
 			return true;
@@ -296,3 +315,4 @@ bool ATP_ThirdPersonCharacter::Plant(AInventoryItem* Item)
 
 	return false;
 }
+
