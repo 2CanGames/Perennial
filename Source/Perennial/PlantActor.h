@@ -120,25 +120,25 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Data")
 		TMap<TEnumAsByte<EPlantStage>, USkeletalMesh*> MeshMap;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Plant")
 		void SetType(EPlantType newType);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Plant")
 		EPlantType GetType() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Plant")
 		void SetStage(EPlantStage newStage);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Plant")
 		EPlantStage GetStage() const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plant Data")
 		FString PlantName;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Plant")
 		void DayEnded();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Plant")
 		void Plant(AInventoryItem * item);
 
 	UFUNCTION()

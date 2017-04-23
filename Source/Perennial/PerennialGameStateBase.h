@@ -37,7 +37,7 @@ private:
 public:
 
 	// advances to the next day and broadcasts an event to all listenters
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Next Day")
 	void advanceToNextDay();
 
 	void broadcast();
@@ -47,12 +47,12 @@ public:
 
 	void eventListenerRemove(AEventListener *listener);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Next Day")
 	int getCurrentAmountOfDays();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Next Day")
 	int getCurrentAmountOfYears();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Next Day")
 	Season getCurrentSeason();
 };

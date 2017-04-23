@@ -81,7 +81,7 @@ protected:
 	void Fertilize();
 
 	/** Action not mapped to buttons */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Plant")
 	bool Plant(AInventoryItem* Item);
 
 	ACharacterActor* MyActor;
