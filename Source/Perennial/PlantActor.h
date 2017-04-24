@@ -122,6 +122,12 @@ public:
 		TMap<TEnumAsByte<EPlantType>, USkeletalMesh*> GrownMeshMap;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Data")
+		TMap<TEnumAsByte<EPlantType>, UAnimationAsset*> GrownAnimationMap;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Data")
+		UAnimationAsset* BabyPlantAnimation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Plant Data")
 		TMap<TEnumAsByte<EPlantStage>, USkeletalMesh*> MeshMap;
 
 	UFUNCTION(BlueprintCallable, Category = "Plant")

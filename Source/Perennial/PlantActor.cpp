@@ -389,6 +389,14 @@ void APlantActor::SetStage(EPlantStage newStage)
 		if((*newMesh)->Materials.Num() > 1 && &(*newMesh)->Materials[1] && (*newMesh)->Materials[1].MaterialInterface) 
 			PlantMesh->SetMaterial(0, (*newMesh)->Materials[1].MaterialInterface);
 	}
+	if (_CurrentStage == EPlantStage::SEED || _CurrentStage == EPlantStage::BUDDING) {
+		PlantMesh->SetAnimation(BabyPlantAnimation);
+	}
+	else {
+		UAnimationAsset** newAnim = (GrownAnimationMap.Find(_Type));
+		PlantMesh->SetAnimation(*newAnim);
+	}
+	PlantMesh->Play(true);
 }
 
 EPlantStage APlantActor::GetStage() const
