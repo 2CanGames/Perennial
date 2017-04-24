@@ -31,10 +31,11 @@ APlantActor::APlantActor()
 	FertilizerEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FertilizerEffect"));
 
 	RootComponent = PlantMesh;
-
-	ButtonPrompt->AttachToComponent(PlantMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
+	ButtonPrompt->SetupAttachment(PlantMesh);
+	//ButtonPrompt->AttachToComponent(PlantMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 	ButtonPrompt->SetRelativeLocation(FVector(0, 0, 180.0f));
-	TextPrompt->AttachToComponent(ButtonPrompt, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
+	TextPrompt->SetupAttachment(ButtonPrompt);
+	//TextPrompt->AttachToComponent(ButtonPrompt, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 	TextPrompt->SetRelativeLocation(FVector(0, 0, 50.0f));
 
 	bIsHarvestable = false;
@@ -101,10 +102,10 @@ void APlantActor::DayEnded()
 		
 		//If this is already a grown plant, stall out some days before next harvest.
 		if (_CurrentStage == EPlantStage::GROWN) 
-			ModDaysToGrow+=(FMath::Round(DaysToGrow / 2));
+			ModDaysToGrow+=(FMath::RoundToInt(DaysToGrow / 2));
 
 		//Check how many growth iterations we're gonna be doing
-		int GrowIterations = FMath::Floor(DaysAlive / ModDaysToGrow);
+		int GrowIterations = FMath::FloorToInt(DaysAlive / ModDaysToGrow);
 
 		//If fertilizer makes plant grow 2 stages in one day, then grow x amt of iterations
 		for (int i = 0; i < GrowIterations; i++)
@@ -128,23 +129,23 @@ void APlantActor::UpdateButton()
 {
 	if (_CurrentStage == EPlantStage::NO_PLANT) {
 		ButtonPrompt->SetMaterial(0, ButtonMap[0]);
-		TextPrompt->SetText(TEXT("Plant"));
+		TextPrompt->SetText(FText::FromString(TEXT("Plant")));
 	}
 	else if (bIsHarvestable && _CurrentStage == EPlantStage::GROWN) {
 		ButtonPrompt->SetMaterial(0, ButtonMap[1]);
-		TextPrompt->SetText(TEXT("Harvest"));
+		TextPrompt->SetText(FText::FromString(TEXT("Harvest")));
 	}
 	else if (!bIsWatered) {
 		ButtonPrompt->SetMaterial(0, ButtonMap[3]);
-		TextPrompt->SetText(TEXT("Water"));
+		TextPrompt->SetText(FText::FromString(TEXT("Water")));
 	}
 	else if (!bIsFertilized) {
 		ButtonPrompt->SetMaterial(0, ButtonMap[2]);
-		TextPrompt->SetText(TEXT("Fertilize"));
+		TextPrompt->SetText(FText::FromString(TEXT("Fertilize")));
 	}
 	else {
 		ButtonPrompt->SetMaterial(0, NULL);
-		TextPrompt->SetText(TEXT(""));
+		TextPrompt->SetText(FText::FromString(TEXT("")));
 	}
 }
 
@@ -372,14 +373,14 @@ void APlantActor::SetStage(EPlantStage newStage)
 	switch (_CurrentStage) {
 		case EPlantStage::NO_PLANT:
 			ButtonPrompt->SetMaterial(0, ButtonMap[0]);
-			TextPrompt->SetText(TEXT("Plant"));
+			TextPrompt->SetText(FText::FromString(TEXT("Plant")));
 			break;
 		case EPlantStage::GROWN:
 			
 			break;
 		default:
 			ButtonPrompt->SetMaterial(0, ButtonMap[3]);
-			TextPrompt->SetText(TEXT("Water"));
+			TextPrompt->SetText(FText::FromString(TEXT("Water")));
 			break;
 	}
 	//We want to get the reference to its grown mesh
