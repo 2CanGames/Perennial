@@ -130,7 +130,7 @@ void APlantActor::Tick(float DeltaTime)
 
 void APlantActor::UpdateButton(bool enoughFertilizer)
 {
-	if (!enoughFertilizer) bEnoughFertilizer = enoughFertilizer;
+	bEnoughFertilizer = enoughFertilizer;
 
 	if (_CurrentStage == EPlantStage::NO_PLANT) {
 		ButtonPrompt->SetMaterial(0, ButtonMap[0]);
@@ -201,7 +201,7 @@ void APlantActor::InitPlant(FString name)
 	SetIsWatered(false);
 	SetIsFertilized(false);
 	SetIsHarvestable(false);		
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 	DaysAlive = 0;
 }
 
@@ -275,7 +275,7 @@ void APlantActor::Die()
 	SetIsWatered(false);
 	SetIsFertilized(false);
 	SetIsHarvestable(false);
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 	Quality = 0;
 	DaysAlive = 0;
 	if (Harvestables.Num() != 0) {
@@ -318,7 +318,7 @@ void APlantActor::SetIsWatered(bool newBool)
 	else {
 		WaterIcon->SetVisibility(true);
 	}
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 }
 
 void APlantActor::SetIsHarvestable(bool newBool)
@@ -344,7 +344,7 @@ void APlantActor::SetIsHarvestable(bool newBool)
 		Harvestables.Empty();
 
 	}
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 }
 
 void APlantActor::SetIsFertilized(bool newBool)
@@ -357,7 +357,7 @@ void APlantActor::SetIsFertilized(bool newBool)
 	else {
 		FertilizerEffect->DeactivateSystem();
 	}
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 }
 
 /*
@@ -444,6 +444,6 @@ TArray<AInventoryItem *> APlantActor::Harvest()
 	}
 	
 	SetIsHarvestable(false);
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 	return HarvestResult;
 }

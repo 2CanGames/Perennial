@@ -151,9 +151,9 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Player Actions")
-		void OnFertilizerUpdate(int newCount);
+		void OnFertilizerUpdate(int newCount, bool gettingCompost);
 
-		void OnFertilizerUpdate_Implementation(int newCount);
+		void OnFertilizerUpdate_Implementation(int newCount, bool gettingCompost);
 
 };
 

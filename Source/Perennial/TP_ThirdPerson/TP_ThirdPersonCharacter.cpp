@@ -70,7 +70,7 @@ void ATP_ThirdPersonCharacter::BeginPlay()
 	}
 }
 
-void ATP_ThirdPersonCharacter::OnFertilizerUpdate_Implementation(int newCount)
+void ATP_ThirdPersonCharacter::OnFertilizerUpdate_Implementation(int newCount, bool gettingCompost)
 {
 }
 
@@ -131,6 +131,10 @@ void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp
 	{
 		PlotBuyer = (APlotBuyingActor*)Other;
 		InterfacingWith = "PlotBuying";
+	}
+
+	else {
+		InterfacingWith = "";
 	}
 }
 
@@ -296,6 +300,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 				}
 				// Call plant's fertilize method
 				CurrentPlant->Fertilize();
+				OnFertilizerUpdate(MyActor->NumFertilizers, false);
 			}
 		}
 		else
@@ -514,7 +519,7 @@ void ATP_ThirdPersonCharacter::AddFertilizer()
 
 	ClearCompostList();
 
-	this->OnFertilizerUpdate(MyActor->NumFertilizers);
+	this->OnFertilizerUpdate(MyActor->NumFertilizers, true);
 
 	if (GEngine)
 	{
