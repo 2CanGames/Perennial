@@ -70,6 +70,10 @@ void ATP_ThirdPersonCharacter::BeginPlay()
 	}
 }
 
+void ATP_ThirdPersonCharacter::OnFertilizerUpdate_Implementation(int newCount)
+{
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -115,14 +119,18 @@ void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp
 	if (Other->IsA(APlantActor::StaticClass()))
 	{
 		CurrentPlant = (APlantActor*)Other;
+		CurrentPlant->UpdateButton(MyActor->NumFertilizers > 0);
+		InterfacingWith = "Plant";
 	}
 	else if (Other->IsA(AComposterActor::StaticClass()))
 	{
 		Composter = (AComposterActor*)Other;
+		InterfacingWith = "Composter";
 	}
 	else if (Other->IsA(APlotBuyingActor::StaticClass()))
 	{
 		PlotBuyer = (APlotBuyingActor*)Other;
+		InterfacingWith = "PlotBuying";
 	}
 }
 
@@ -140,6 +148,8 @@ void ATP_ThirdPersonCharacter::OnEndOverlap(class UPrimitiveComponent* HitComp, 
 	{
 		PlotBuyer = nullptr;
 	}
+
+	InterfacingWith = "";
 }
 
 void ATP_ThirdPersonCharacter::OnResetVR()
@@ -234,7 +244,7 @@ void ATP_ThirdPersonCharacter::Water()
 	if (CurrentPlant)
 	{
 		// Check if plant is waterable
-		if (!(CurrentPlant->bIsWatered))
+		if (!(CurrentPlant->bIsWatered) && CurrentPlant->GetStage() != EPlantStage::NO_PLANT)
 		{
 			if (GEngine)
 			{
@@ -263,7 +273,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 	if (CurrentPlant)
 	{
 		// Check if plant is already fertilized
-		if (!(CurrentPlant->bIsFertilized))
+		if (!(CurrentPlant->bIsFertilized) && CurrentPlant->GetStage() != EPlantStage::NO_PLANT)
 		{
 			// Check that player has fertilizer
 			if (!MyActor->DeleteFertilizer())
@@ -472,6 +482,10 @@ int ATP_ThirdPersonCharacter::GetTotalPlotBuyingPoints()
 void ATP_ThirdPersonCharacter::AddFertilizer()
 {
 	MyActor->NumFertilizers++;
+
+	ClearCompostList();
+
+	this->OnFertilizerUpdate(MyActor->NumFertilizers);
 
 	if (GEngine)
 	{

@@ -30,6 +30,8 @@ public:
 
 private:
 
+	bool bEnoughFertilizer = true;
+
 	//Had reference to plant types
 	APlantDictionary* PlantDictionary;
 
@@ -46,8 +48,6 @@ private:
 	EPlantType _Type;
 
 	TArray<AHarvestable *> Harvestables;
-
-	void UpdateButton();
 
 	//Initialize the plant given a name
 	void InitPlant(FString name);
@@ -156,6 +156,8 @@ public:
 
 	UFUNCTION()
 		void Fertilize();
+
+	void UpdateButton(bool enoughFertilizer = true);
 
 	/* TODO: Change return type to InventoryItem[] when implemented*/
 	UFUNCTION()

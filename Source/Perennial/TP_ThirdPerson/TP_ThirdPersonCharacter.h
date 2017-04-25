@@ -122,6 +122,9 @@ protected:
 	// End of APawn interface
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FString InterfacingWith;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlantActor* CurrentPlant;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -143,5 +146,11 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Player Actions")
+		void OnFertilizerUpdate(int newCount);
+
+		void OnFertilizerUpdate_Implementation(int newCount);
+
 };
 
