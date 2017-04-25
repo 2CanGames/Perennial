@@ -57,7 +57,7 @@ public:
 	ECharacterStage _CurrentStage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Inventory")
-	int NumFertilizers;
+	int NumFertilizers = 3;
 
 	int DaysAlive;
 
