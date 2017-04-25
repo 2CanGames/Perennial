@@ -109,6 +109,9 @@ protected:
 	void ClearPlotBuyingList();
 
 	UFUNCTION(BlueprintCallable)
+	void CancelPlotBuying();
+
+	UFUNCTION(BlueprintCallable)
 	int GetTotalPlotBuyingPoints();
 
 	ACharacterActor* MyActor;
