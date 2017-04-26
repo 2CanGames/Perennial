@@ -109,6 +109,9 @@ protected:
 	void ClearPlotBuyingList();
 
 	UFUNCTION(BlueprintCallable)
+	void CancelPlotBuying();
+
+	UFUNCTION(BlueprintCallable)
 	int GetTotalPlotBuyingPoints();
 
 	ACharacterActor* MyActor;
@@ -120,6 +123,9 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FString InterfacingWith;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlantActor* CurrentPlant;
@@ -143,5 +149,11 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Player Actions")
+		void OnFertilizerUpdate(int newCount, bool gettingCompost);
+
+		void OnFertilizerUpdate_Implementation(int newCount, bool gettingCompost);
+
 };
 

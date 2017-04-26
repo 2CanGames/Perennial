@@ -38,6 +38,7 @@ APlantActor::APlantActor()
 	//TextPrompt->AttachToComponent(ButtonPrompt, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 	TextPrompt->SetRelativeLocation(FVector(0, 0, 50.0f));
 
+	bEnoughFertilizer = true;
 	bIsHarvestable = false;
 	Quality = 0;
 	DaysAlive = 0;
@@ -112,6 +113,8 @@ void APlantActor::DayEnded()
 			Grow();
 	}
 
+	bEnoughFertilizer = true;
+
 	//Revert isWatered state
 	//Revert isFertilized state
 	SetIsWatered(false);
@@ -125,8 +128,10 @@ void APlantActor::Tick(float DeltaTime)
 
 }
 
-void APlantActor::UpdateButton()
+void APlantActor::UpdateButton(bool enoughFertilizer)
 {
+	bEnoughFertilizer = enoughFertilizer;
+
 	if (_CurrentStage == EPlantStage::NO_PLANT) {
 		ButtonPrompt->SetMaterial(0, ButtonMap[0]);
 		TextPrompt->SetText(FText::FromString(TEXT("Plant")));
@@ -139,7 +144,7 @@ void APlantActor::UpdateButton()
 		ButtonPrompt->SetMaterial(0, ButtonMap[3]);
 		TextPrompt->SetText(FText::FromString(TEXT("Water")));
 	}
-	else if (!bIsFertilized) {
+	else if (!bIsFertilized && bEnoughFertilizer) {
 		ButtonPrompt->SetMaterial(0, ButtonMap[2]);
 		TextPrompt->SetText(FText::FromString(TEXT("Fertilize")));
 	}
@@ -196,7 +201,7 @@ void APlantActor::InitPlant(FString name)
 	SetIsWatered(false);
 	SetIsFertilized(false);
 	SetIsHarvestable(false);		
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 	DaysAlive = 0;
 }
 
@@ -270,7 +275,7 @@ void APlantActor::Die()
 	SetIsWatered(false);
 	SetIsFertilized(false);
 	SetIsHarvestable(false);
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 	Quality = 0;
 	DaysAlive = 0;
 	if (Harvestables.Num() != 0) {
@@ -313,7 +318,7 @@ void APlantActor::SetIsWatered(bool newBool)
 	else {
 		WaterIcon->SetVisibility(true);
 	}
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 }
 
 void APlantActor::SetIsHarvestable(bool newBool)
@@ -339,7 +344,7 @@ void APlantActor::SetIsHarvestable(bool newBool)
 		Harvestables.Empty();
 
 	}
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 }
 
 void APlantActor::SetIsFertilized(bool newBool)
@@ -352,7 +357,7 @@ void APlantActor::SetIsFertilized(bool newBool)
 	else {
 		FertilizerEffect->DeactivateSystem();
 	}
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 }
 
 /*
@@ -387,17 +392,18 @@ void APlantActor::SetStage(EPlantStage newStage)
 	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
 	if (newMesh) {
 		PlantMesh->SetSkeletalMesh(*newMesh, false);
-		if((*newMesh)->Materials.Num() > 1 && &(*newMesh)->Materials[1] && (*newMesh)->Materials[1].MaterialInterface) 
-			PlantMesh->SetMaterial(0, (*newMesh)->Materials[1].MaterialInterface);
+		if((*newMesh)->Materials.Num() > 1 && &(*newMesh)->Materials[0] && (*newMesh)->Materials[0].MaterialInterface) 
+			PlantMesh->SetMaterial(0, (*newMesh)->Materials[0].MaterialInterface);
+	
+		if (_CurrentStage == EPlantStage::SEED || _CurrentStage == EPlantStage::BUDDING) {
+			PlantMesh->SetAnimation(BabyPlantAnimation);
+		}
+		else {
+			UAnimationAsset** newAnim = (GrownAnimationMap.Find(_Type));
+			PlantMesh->SetAnimation(*newAnim);
+		}
+		PlantMesh->Play(true);
 	}
-	if (_CurrentStage == EPlantStage::SEED || _CurrentStage == EPlantStage::BUDDING) {
-		PlantMesh->SetAnimation(BabyPlantAnimation);
-	}
-	else {
-		UAnimationAsset** newAnim = (GrownAnimationMap.Find(_Type));
-		PlantMesh->SetAnimation(*newAnim);
-	}
-	PlantMesh->Play(true);
 }
 
 EPlantStage APlantActor::GetStage() const
@@ -438,6 +444,6 @@ TArray<AInventoryItem *> APlantActor::Harvest()
 	}
 	
 	SetIsHarvestable(false);
-	UpdateButton();
+	UpdateButton(bEnoughFertilizer);
 	return HarvestResult;
 }

@@ -70,6 +70,10 @@ void ATP_ThirdPersonCharacter::BeginPlay()
 	}
 }
 
+void ATP_ThirdPersonCharacter::OnFertilizerUpdate_Implementation(int newCount, bool gettingCompost)
+{
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -115,14 +119,22 @@ void ATP_ThirdPersonCharacter::OnBeginOverlap(class UPrimitiveComponent* HitComp
 	if (Other->IsA(APlantActor::StaticClass()))
 	{
 		CurrentPlant = (APlantActor*)Other;
+		CurrentPlant->UpdateButton(MyActor->NumFertilizers > 0);
+		InterfacingWith = "Plant";
 	}
 	else if (Other->IsA(AComposterActor::StaticClass()))
 	{
 		Composter = (AComposterActor*)Other;
+		InterfacingWith = "Composter";
 	}
 	else if (Other->IsA(APlotBuyingActor::StaticClass()))
 	{
 		PlotBuyer = (APlotBuyingActor*)Other;
+		InterfacingWith = "PlotBuying";
+	}
+
+	else {
+		InterfacingWith = "";
 	}
 }
 
@@ -140,6 +152,8 @@ void ATP_ThirdPersonCharacter::OnEndOverlap(class UPrimitiveComponent* HitComp, 
 	{
 		PlotBuyer = nullptr;
 	}
+
+	InterfacingWith = "";
 }
 
 void ATP_ThirdPersonCharacter::OnResetVR()
@@ -234,7 +248,7 @@ void ATP_ThirdPersonCharacter::Water()
 	if (CurrentPlant)
 	{
 		// Check if plant is waterable
-		if (!(CurrentPlant->bIsWatered))
+		if (!(CurrentPlant->bIsWatered) && CurrentPlant->GetStage() != EPlantStage::NO_PLANT)
 		{
 			if (GEngine)
 			{
@@ -263,7 +277,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 	if (CurrentPlant)
 	{
 		// Check if plant is already fertilized
-		if (!(CurrentPlant->bIsFertilized))
+		if (!(CurrentPlant->bIsFertilized) && CurrentPlant->GetStage() != EPlantStage::NO_PLANT)
 		{
 			// Check that player has fertilizer
 			if (!MyActor->DeleteFertilizer())
@@ -286,6 +300,7 @@ void ATP_ThirdPersonCharacter::Fertilize()
 				}
 				// Call plant's fertilize method
 				CurrentPlant->Fertilize();
+				OnFertilizerUpdate(MyActor->NumFertilizers, false);
 			}
 		}
 		else
@@ -366,6 +381,11 @@ void ATP_ThirdPersonCharacter::RemoveFromCompostList(AInventoryItem * Item)
 		}
 		count++;
 	}
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("REMOVE - # Items in CompostList: ") + FString::FromInt(CompostList.Num()));
+	}
 }
 
 // When player has confirmed a compost
@@ -386,12 +406,12 @@ void ATP_ThirdPersonCharacter::ClearCompostList()
 
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("CLEAR - # Items in CompostList: ") + FString::FromInt(CompostList.Num()));
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("SUCCESSFUL COMPOST - # Items in CompostList: ") + FString::FromInt(CompostList.Num()));
 	}
 }
 
 // Player cancelled in the middle of composting
-// Removes all items from compost list, does NOT remove from inventory
+// Removes all items from compost list
 void ATP_ThirdPersonCharacter::CancelCompost()
 {
 	if (GEngine)
@@ -402,6 +422,8 @@ void ATP_ThirdPersonCharacter::CancelCompost()
 	CompostList.Empty();
 }
 
+// Adds item to plot buying list
+// Does NOT remove from inventory yet
 void ATP_ThirdPersonCharacter::AddToPlotBuyingList(AInventoryItem * Item)
 {
 	if (PlotBuyingList.Contains(Item))
@@ -411,15 +433,16 @@ void ATP_ThirdPersonCharacter::AddToPlotBuyingList(AInventoryItem * Item)
 	else
 	{
 		PlotBuyingList.Add(Item);
-		MyActor->PlayerInventory->removeItemToInventory(Item);
+	}
 
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item removed from inventory"));
-		}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("ADD - # Items in PlotBuyingList: ") + FString::FromInt(PlotBuyingList.Num()));
 	}
 }
 
+// For 'unclicking' an item when buying plot
+// Only removes from plot buying list
 void ATP_ThirdPersonCharacter::RemoveFromPlotBuyingList(AInventoryItem * Item)
 {
 	int count = 0;
@@ -433,23 +456,44 @@ void ATP_ThirdPersonCharacter::RemoveFromPlotBuyingList(AInventoryItem * Item)
 		count++;
 	}
 
-	MyActor->PlayerInventory->addItemToInventory(Item);
-
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("Item added to inventory"));
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("REMOVE - # Items in PlotBuyingList: ") + FString::FromInt(PlotBuyingList.Num()));
 	}
 }
 
+// When player has confirmed buying plot
+// Removes items from plot buying list AND removes all items from inventory
 void ATP_ThirdPersonCharacter::ClearPlotBuyingList()
 {
-	if (PlotBuyingList.Num() != 0)
+	for (auto& CurrentItem : PlotBuyingList)
 	{
-		for (auto& CurrentItem : PlotBuyingList)
+		MyActor->PlayerInventory->removeItemToInventory(CurrentItem);
+
+		if (GEngine)
 		{
-			RemoveFromPlotBuyingList(CurrentItem);
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("Item removed from inventory"));
 		}
 	}
+
+	PlotBuyingList.Empty();
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("SUCCESSFUL PLOT BUY - # Items in PlotBuyingList: ") + FString::FromInt(PlotBuyingList.Num()));
+	}
+}
+
+// Player cancelled in the middle of buying plot
+// Removes all items from plot buying list
+void ATP_ThirdPersonCharacter::CancelPlotBuying()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("CANCEL - # Items in PlotBuyingList: ") + FString::FromInt(PlotBuyingList.Num()));
+	}
+
+	PlotBuyingList.Empty();
 }
 
 int ATP_ThirdPersonCharacter::GetTotalPlotBuyingPoints()
@@ -472,6 +516,10 @@ int ATP_ThirdPersonCharacter::GetTotalPlotBuyingPoints()
 void ATP_ThirdPersonCharacter::AddFertilizer()
 {
 	MyActor->NumFertilizers++;
+
+	ClearCompostList();
+
+	this->OnFertilizerUpdate(MyActor->NumFertilizers, true);
 
 	if (GEngine)
 	{
