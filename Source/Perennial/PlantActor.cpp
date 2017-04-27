@@ -392,7 +392,7 @@ void APlantActor::SetStage(EPlantStage newStage)
 	USkeletalMesh** newMesh = (MeshMap.Find(_CurrentStage));
 	if (newMesh) {
 		PlantMesh->SetSkeletalMesh(*newMesh, false);
-		if((*newMesh)->Materials.Num() > 1 && &(*newMesh)->Materials[0] && (*newMesh)->Materials[0].MaterialInterface) 
+		if((*newMesh) && (*newMesh)->Materials.Num() > 0 && &(*newMesh)->Materials[0] && (*newMesh)->Materials[0].MaterialInterface) 
 			PlantMesh->SetMaterial(0, (*newMesh)->Materials[0].MaterialInterface);
 	
 		if (_CurrentStage == EPlantStage::SEED || _CurrentStage == EPlantStage::BUDDING) {
