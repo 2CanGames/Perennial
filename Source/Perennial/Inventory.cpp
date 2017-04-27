@@ -51,7 +51,8 @@ int UInventory::getTotalQualityPoints()
 
 	for (auto& CurrentItem : items)
 	{
-		totalQualityPoints += CurrentItem->getQuality();
+		int Quality = (CurrentItem->isSeed) ? 0 : CurrentItem->getQuality();
+		totalQualityPoints += Quality;
 	}
 
 	return totalQualityPoints;
