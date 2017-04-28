@@ -502,7 +502,8 @@ int ATP_ThirdPersonCharacter::GetTotalPlotBuyingPoints()
 
 	for (auto& CurrentItem : PlotBuyingList)
 	{
-		TotalPoints += CurrentItem->getQuality();
+		int Quality = (CurrentItem->isSeed) ? 0 : CurrentItem->getQuality();
+		TotalPoints += Quality;
 	}
 
 	if (GEngine)
