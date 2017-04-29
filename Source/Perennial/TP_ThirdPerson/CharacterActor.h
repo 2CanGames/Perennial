@@ -51,6 +51,9 @@ public:
 
 	void Harvest(APlantActor* CurrentPlant);
 
+	UFUNCTION(BlueprintCallable, Category = "Player Inventory")
+	int GetTotalQualityPoints();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Inventory")
 	UInventory* PlayerInventory;
 

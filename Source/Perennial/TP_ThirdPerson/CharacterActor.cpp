@@ -119,3 +119,8 @@ void ACharacterActor::Harvest(APlantActor* CurrentPlant)
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Total Quality Points: ") + FString::FromInt(TotalQualityPoints));
 	}
 }
+
+int ACharacterActor::GetTotalQualityPoints()
+{
+	return PlayerInventory->getTotalQualityPoints();
+}
